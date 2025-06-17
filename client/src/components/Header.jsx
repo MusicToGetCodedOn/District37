@@ -1,0 +1,116 @@
+// Header.jsx
+import React, { useState, useEffect } from 'react';
+import styled, { ThemeProvider, createGlobalStyle } from 'styled-components';
+import { Link } from 'react-router-dom';
+import { Moon, Sun } from 'lucide-react';
+
+const GlobalStyle = createGlobalStyle`
+  body {
+    background-color: ${({ theme }) => theme.body};
+    color: ${({ theme }) => theme.text};
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+`;
+
+const lightTheme = {
+  body: '#f5f7fa',
+  text: '#1f1f1f',
+  nav: '#ffffff',
+  accent: '#7c3aed',
+};
+
+const darkTheme = {
+  body: '#121212',
+  text: '#f0f0f0',
+  nav: '#1e1e1e',
+  accent: '#00c2ff',
+};
+
+const HeaderContainer = styled.header`
+  background-color: ${({ theme }) => theme.nav};
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 3rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 10;
+  border-radius: 10px;
+`;
+
+const Logo = styled.h1`
+  font-size: 2rem;
+  color: ${({ theme }) => theme.accent};
+  margin: 0;
+`;
+
+const Nav = styled.nav`
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+`;
+
+const StyledLink = styled(Link)`
+  text-decoration: none;
+  color: ${({ theme }) => theme.text};
+  font-size: 1.2rem;
+  font-weight: 600;
+  position: relative;
+
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    background: ${({ theme }) => theme.accent};
+    transition: width 0.3s ease;
+  }
+
+  &:hover::after {
+    width: 100%;
+  }
+`;
+
+const ToggleButton = styled.button`
+  background: none;
+  border: none;
+  color: ${({ theme }) => theme.text};
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 1.3rem;
+
+  &:hover {
+    color: ${({ theme }) => theme.accent};
+  }
+`;
+
+export default function Header() {
+  const [darkMode, setDarkMode] = useState(() =>
+    localStorage.getItem('theme') === 'dark'
+  );
+
+  useEffect(() => {
+    localStorage.setItem('theme', darkMode ? 'dark' : 'light');
+  }, [darkMode]);
+
+  return (
+    <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
+      <GlobalStyle />
+      <HeaderContainer>
+        <Logo>District37</Logo>
+        <Nav>
+          <StyledLink to="/appointment">Appointment</StyledLink>
+          <StyledLink to="/about">About</StyledLink>
+          <ToggleButton onClick={() => setDarkMode(!darkMode)}>
+            {darkMode ? <Sun size={24} /> : <Moon size={24} />}
+          </ToggleButton>
+        </Nav>
+      </HeaderContainer>
+    </ThemeProvider>
+  );
+}

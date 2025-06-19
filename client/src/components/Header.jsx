@@ -115,13 +115,14 @@ const StyledButton = styled.button`
   }
 `;
 
-export default function Header() {
-  const [darkMode, setDarkMode] = useState(() =>
-    localStorage.getItem('theme') === 'dark'
-  );
+export default function Header({ darkMode, setDarkMode }) {
+  
   const navigate = useNavigate();
 
-  const { isLoggedIn, role, logout } = useContext(AuthContext);
+  const { isLoggedIn, role, logout, isAuthReady } = useContext(AuthContext);
+
+if (!isAuthReady) return null;
+
 
   const handleLogout = () => {
     logout();

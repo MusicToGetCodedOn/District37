@@ -1,10 +1,92 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+
+const FormWrapper = styled.form`
+  max-width: 400px;
+  margin: 4rem auto;
+  padding: 2rem;
+  background-color: ${({ theme }) => theme.nav};
+  color: ${({ theme }) => theme.text};
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s ease, color 0.3s ease;
+`;
+
+const Heading = styled.h2`
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: ${({ theme }) => theme.accent};
+`;
+
+const InputGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+`;
+
+const Label = styled.label`
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+`;
+
+const Input = styled.input`
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+  border: 1px solid ${({ theme }) => theme.accent};
+  background: transparent;
+  color: ${({ theme }) => theme.text};
+  transition: border-color 0.3s ease;
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.text};
+  }
+`;
+
+const Message = styled.p`
+  text-align: center;
+  color: ${({ theme }) => theme.accent};
+  margin: 1rem 0;
+`;
+
+const Button = styled.button`
+  width: 100%;
+  padding: 0.9rem;
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  background-color: ${({ theme }) => theme.accent};
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.3s ease;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.text};
+    color: ${({ theme }) => theme.body};
+  }
+`;
+
+const TextButton = styled.button`
+  background: none;
+  border: none;
+  color: ${({ theme }) => theme.accent};
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-top: 0.5rem;
+
+  &:hover {
+    color: ${({ theme }) => theme.text};
+  }
+`;
 
 function RegisterForm() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,39 +111,53 @@ function RegisterForm() {
     }
   };
 
+  const handleLogin = () => {
+    navigate('/login');
+  };
+
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Registrieren</h2>
-      {message && <p>{message}</p>}
-      <div>
-        <label>Name:</label>
-        <input
+    <FormWrapper onSubmit={handleSubmit}>
+      <Heading>Registrieren</Heading>
+
+      {message && <Message>{message}</Message>}
+
+      <InputGroup>
+        <Label>Name:</Label>
+        <Input
           type="text"
           value={name}
           onChange={e => setName(e.target.value)}
           required
         />
-      </div>
-      <div>
-        <label>E-Mail:</label>
-        <input
+      </InputGroup>
+
+      <InputGroup>
+        <Label>E-Mail:</Label>
+        <Input
           type="email"
           value={email}
           onChange={e => setEmail(e.target.value)}
           required
         />
-      </div>
-      <div>
-        <label>Passwort:</label>
-        <input
+      </InputGroup>
+
+      <InputGroup>
+        <Label>Passwort:</Label>
+        <Input
           type="password"
           value={password}
           onChange={e => setPassword(e.target.value)}
           required
         />
-      </div>
-      <button type="submit">Registrieren</button>
-    </form>
+      </InputGroup>
+
+      <Button type="submit">Registrieren</Button>
+
+      <p style={{ textAlign: 'center' }}>
+        Du hast bereits ein Konto?{' '}
+        <TextButton type="button" onClick={handleLogin}>Login</TextButton>
+      </p>
+    </FormWrapper>
   );
 }
 

@@ -1,0 +1,9 @@
+.container {
+  display: flex;
+  gap: 50%;
+  flex-direction: row;
+  justify-content: start;
+  flex-wrap: nowrap;
+  align-content: start;
+  align-items: start;
+}

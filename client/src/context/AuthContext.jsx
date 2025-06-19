@@ -3,13 +3,33 @@ import { createContext, useState, useEffect } from 'react';
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
-  const [role, setRole] = useState(localStorage.getItem('role') || '');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [role, setRole] = useState('');
+  const [isAuthReady, setIsAuthReady] = useState(false);
 
   useEffect(() => {
+    // Initiales Laden aus localStorage
+    const token = localStorage.getItem('token');
+    const storedRole = localStorage.getItem('role');
+
+    if (token) {
+      setIsLoggedIn(true);
+    }
+    if (storedRole) {
+      setRole(storedRole);
+    }
+
+    setIsAuthReady(true);
+  }, []);
+
+  // Reagiere auf Änderungen von anderen Tabs
+  useEffect(() => {
     const checkLogin = () => {
-      setIsLoggedIn(!!localStorage.getItem('token'));
-      setRole(localStorage.getItem('role') || '');
+      const token = localStorage.getItem('token');
+      const storedRole = localStorage.getItem('role');
+
+      setIsLoggedIn(!!token);
+      setRole(storedRole || '');
     };
 
     window.addEventListener('storage', checkLogin);
@@ -31,7 +51,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, role, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, role, login, logout, isAuthReady }}>
       {children}
     </AuthContext.Provider>
   );

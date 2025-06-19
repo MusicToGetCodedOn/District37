@@ -11,7 +11,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   const isAuthorized =
   token && allowedRoles.includes(role);
 
-  return isAuthorized? children : <Navigate to="/login" replace />;
+  return isAuthorized ? children : <Navigate to="/login" replace />;
 };
 
 export default ProtectedRoute;

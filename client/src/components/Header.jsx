@@ -122,6 +122,7 @@ export default function Header({ darkMode, setDarkMode }) {
   const { isLoggedIn, role, logout, isAuthReady } = useContext(AuthContext);
 
 if (!isAuthReady) return null;
+console.log({ isLoggedIn, role });
 
 
   const handleLogout = () => {
@@ -149,9 +150,9 @@ if (!isAuthReady) return null;
             <StyledButton onClick={handleLogin}>Login</StyledButton>
           )}
 
-          {isLoggedIn && (role === 'admin' || role === 'superuser') && (
-            <StyledLink to="/dashboard">Dashboard</StyledLink>
-          )}
+         {isLoggedIn && ['admin', 'superuser'].includes(role?.toLowerCase()) && (
+  <StyledLink to="/dashboard">Dashboard</StyledLink>
+)}
 
           <ToggleButton onClick={() => setDarkMode(!darkMode)}>
             {darkMode ? <Sun size={24} /> : <Moon size={24} />}

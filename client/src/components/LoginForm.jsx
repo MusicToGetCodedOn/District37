@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled, { useTheme } from 'styled-components';
+import { AuthContext } from '../context/AuthContext';
 
 const FormContainer = styled.div`
   display: flex;
@@ -90,7 +91,10 @@ const LoginForm = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const theme = useTheme(); // falls du etwas themenspezifisch brauchst
+  const theme = useTheme();
+
+  // AuthContext holen
+  const { login } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -109,8 +113,17 @@ const LoginForm = () => {
         throw new Error(data.message || 'Login fehlgeschlagen');
       }
 
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('role', data.role);
+      // Token und Role aus response nehmen
+      const token = data.token;
+     const role = data.user?.role || '';
+localStorage.setItem('token', data.token);
+localStorage.setItem('role', role);
+login(data.token, role);
+
+      // Context login Funktion aufrufen
+      login(token, role);
+
+      // navigate zur Startseite o.ä.
       navigate('/');
     } catch (err) {
       setError(err.message);

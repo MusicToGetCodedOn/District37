@@ -103,6 +103,7 @@ function RegisterForm() {
         setName('');
         setEmail('');
         setPassword('');
+        navigate('/login')
       } else {
         setMessage(data.message || 'Fehler bei der Registrierung');
       }

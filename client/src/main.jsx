@@ -8,6 +8,8 @@ import AppointmentRoute from './routes/AppointmentRoute.jsx'
 import AboutRoute from './routes/AboutRoute.jsx'
 import LoginRoute from './routes/LoginRoute.jsx'
 import RegisterRoute from './routes/RegisterRoute.jsx'
+import ProtectedRoute from './routes/ProtectedRoute.jsx'
+import AdminRoute from './routes/AdminRoute.jsx'
 
 const router = createBrowserRouter([
   {
@@ -34,6 +36,12 @@ const router = createBrowserRouter([
         path: '/register/',
         element: <RegisterRoute />
       },
+      {
+        path: '/dashboard/',
+        element: <ProtectedRoute allowedRoles={['superuser', 'admin']}>
+          <AdminRoute />
+        </ProtectedRoute>
+      }
 
     ],
   },

@@ -37,7 +37,8 @@ const HeaderContainer = styled.header`
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   position: relative;
   z-index: 10;
-  border-radius: 10px;
+  border-radius: 30px;
+  width: 1200px;
 `;
 
 const Logo = styled.h1`
@@ -104,8 +105,10 @@ export default function Header() {
       <HeaderContainer>
         <Logo>District37</Logo>
         <Nav>
+          <StyledLink to="/">Home</StyledLink>
           <StyledLink to="/appointment">Appointment</StyledLink>
           <StyledLink to="/about">About</StyledLink>
+          <StyledLink to='/login'>Register</StyledLink>
           <ToggleButton onClick={() => setDarkMode(!darkMode)}>
             {darkMode ? <Sun size={24} /> : <Moon size={24} />}
           </ToggleButton>

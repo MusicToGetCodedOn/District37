@@ -1,0 +1,11 @@
+
+
+export default function Dashboard() {
+  return (
+    <div>
+      <h1>Dashboard</h1>
+      <p>Welcome to the dashboard!</p>
+      <p>This is a protected route that only authenticated users can access.</p>
+    </div>
+  );
+}

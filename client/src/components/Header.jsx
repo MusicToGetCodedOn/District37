@@ -1,8 +1,8 @@
-// Header.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import styled, { ThemeProvider, createGlobalStyle } from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Moon, Sun } from 'lucide-react';
+import { AuthContext } from '../context/AuthContext';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -90,14 +90,47 @@ const ToggleButton = styled.button`
   }
 `;
 
+const StyledButton = styled.button`
+  background: none;
+  border: none;
+  color: ${({ theme }) => theme.text};
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    background: ${({ theme }) => theme.accent};
+    transition: width 0.3s ease;
+  }
+
+  &:hover::after {
+    width: 100%;
+  }
+`;
+
 export default function Header() {
   const [darkMode, setDarkMode] = useState(() =>
     localStorage.getItem('theme') === 'dark'
   );
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    localStorage.setItem('theme', darkMode ? 'dark' : 'light');
-  }, [darkMode]);
+  const { isLoggedIn, role, logout } = useContext(AuthContext);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  const handleLogin = () => {
+    navigate('/login');
+  };
 
   return (
     <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
@@ -108,7 +141,17 @@ export default function Header() {
           <StyledLink to="/">Home</StyledLink>
           <StyledLink to="/appointment">Appointment</StyledLink>
           <StyledLink to="/about">About</StyledLink>
-          <StyledLink to='/login'>Register</StyledLink>
+
+          {isLoggedIn ? (
+            <StyledButton onClick={handleLogout}>Logout</StyledButton>
+          ) : (
+            <StyledButton onClick={handleLogin}>Login</StyledButton>
+          )}
+
+          {isLoggedIn && (role === 'admin' || role === 'superuser') && (
+            <StyledLink to="/dashboard">Dashboard</StyledLink>
+          )}
+
           <ToggleButton onClick={() => setDarkMode(!darkMode)}>
             {darkMode ? <Sun size={24} /> : <Moon size={24} />}
           </ToggleButton>

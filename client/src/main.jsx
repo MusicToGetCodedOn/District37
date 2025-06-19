@@ -6,6 +6,8 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import HomeRoute from './routes/HomeRoute.jsx'
 import AppointmentRoute from './routes/AppointmentRoute.jsx'
 import AboutRoute from './routes/AboutRoute.jsx'
+import LoginRoute from './routes/LoginRoute.jsx'
+import RegisterRoute from './routes/RegisterRoute.jsx'
 
 const router = createBrowserRouter([
   {
@@ -23,8 +25,15 @@ const router = createBrowserRouter([
       {
         path: '/about/',
         element: <AboutRoute />
-      }
-        
+      },
+      {
+        path: '/login/',
+        element: <LoginRoute />
+      },
+      {
+        path: '/register/',
+        element: <RegisterRoute />
+      },
 
     ],
   },

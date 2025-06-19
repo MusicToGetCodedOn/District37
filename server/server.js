@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import authRoutes from './routes/authroutes.js';
+
 
 
 
@@ -11,6 +13,8 @@ dotenv.config();
 
 app.use(cors());
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+app.use(express.json());
+app.use('/api/auth', authRoutes);
 
 
 const PORT = process.env.PORT || 8080;

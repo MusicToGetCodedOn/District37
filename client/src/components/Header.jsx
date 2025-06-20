@@ -1,32 +1,12 @@
-import React, { useState, useContext } from 'react';
-import styled, { ThemeProvider, createGlobalStyle } from 'styled-components';
+import React, { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Moon, Sun } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
+import styled, { useTheme, ThemeProvider } from 'styled-components';
+import { lightTheme, darkTheme } from '../assets/theme';
+import { GlobalStyle } from '../assets/GlobalStyle';
 
-const GlobalStyle = createGlobalStyle`
-  body {
-    background-color: ${({ theme }) => theme.body};
-    color: ${({ theme }) => theme.text};
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    transition: background 0.3s ease, color 0.3s ease;
-  }
-`;
 
-const lightTheme = {
-  body: '#f5f7fa',
-  text: '#1f1f1f',
-  nav: '#ffffff',
-  accent: '#7c3aed',
-};
-
-const darkTheme = {
-  body: '#121212',
-  text: '#f0f0f0',
-  nav: '#1e1e1e',
-  accent: '#00c2ff',
-};
 
 const HeaderContainer = styled.header`
   background-color: ${({ theme }) => theme.nav};
@@ -116,6 +96,7 @@ const StyledButton = styled.button`
 `;
 
 export default function Header({ darkMode, setDarkMode }) {
+  const theme = useTheme();
   
   const navigate = useNavigate();
 
@@ -124,6 +105,7 @@ export default function Header({ darkMode, setDarkMode }) {
 if (!isAuthReady) return null;
 console.log({ isLoggedIn, role });
 
+console.log("Darkmode header ?" , darkMode)
 
   const handleLogout = () => {
     logout();
@@ -135,7 +117,7 @@ console.log({ isLoggedIn, role });
   };
 
   return (
-    <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
+    <>
       <GlobalStyle />
       <HeaderContainer>
         <Logo>District37</Logo>
@@ -159,6 +141,6 @@ console.log({ isLoggedIn, role });
           </ToggleButton>
         </Nav>
       </HeaderContainer>
-    </ThemeProvider>
+    </>
   );
 }

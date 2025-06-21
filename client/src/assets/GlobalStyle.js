@@ -35,10 +35,12 @@ export const GlobalStyle = createGlobalStyle`
   background-color: ${({ theme }) => theme.accent};
   color: white;
   transition: background-color 0.3s ease, transform 0.2s ease;
+  text-decoration: none;
 
   &:hover {
     background-color: ${({ theme }) => theme.accent + 'cc'}; // leicht transparenter
     transform: translateY(-2px);
+    color: #fff
   }
 
   &:active {
@@ -46,5 +48,20 @@ export const GlobalStyle = createGlobalStyle`
   }
 
 
-    `;
+  .locationsection{
+  padding: 2rem
+  background-color:${({theme}) => theme.card}
+  align-text: center
+  }
+  .mapcontainer{
+  margin-top: 1rem
+  width: 100%
+  maxWidth: 800px
+  margin: 0 auto}
+
+  
+
+  `;
+
+
 

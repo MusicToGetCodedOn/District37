@@ -31,16 +31,18 @@ const Label = styled.label`
 `;
 
 const Input = styled.input`
+    width: 90%;
   padding: 0.8rem 1rem;
-  border-radius: 10px;
-  border: 1px solid ${({ theme }) => theme.accent};
-  background: transparent;
+  margin-bottom: 1rem;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background-color: ${({ theme }) => theme.body};
   color: ${({ theme }) => theme.text};
   transition: border-color 0.3s ease;
 
   &:focus {
     outline: none;
-    border-color: ${({ theme }) => theme.text};
+    border-color: ${({ theme }) => theme.accent};
   }
 `;
 
@@ -123,32 +125,33 @@ function RegisterForm() {
       {message && <Message>{message}</Message>}
 
       <InputGroup>
-        <Label>Name:</Label>
+        
         <Input
           type="text"
           value={name}
           onChange={e => setName(e.target.value)}
           required
+          placeholder='Name'
         />
       </InputGroup>
 
       <InputGroup>
-        <Label>E-Mail:</Label>
         <Input
           type="email"
           value={email}
           onChange={e => setEmail(e.target.value)}
           required
+          placeholder='Email'
         />
       </InputGroup>
 
       <InputGroup>
-        <Label>Passwort:</Label>
         <Input
           type="password"
           value={password}
           onChange={e => setPassword(e.target.value)}
           required
+          placeholder='Passwort'
         />
       </InputGroup>
 

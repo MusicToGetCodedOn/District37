@@ -3,8 +3,8 @@ export const lightTheme = {
   text: '#1f1f1f',
   nav: '#ffffff',
   accent: '#7c3aed',
+  accenthover:'#9333ea',
   card: '#e9ecf1',
-  Shadow: '#000',
 };
 
 export const darkTheme = {
@@ -12,6 +12,7 @@ export const darkTheme = {
   text: '#f0f0f0',
   nav: '#1e1e1e',
   accent: '#00c2ff',
+  accenthover:'#33d6ff',
   card: '#242424',
-  Shadow: '#fff',
 };
+

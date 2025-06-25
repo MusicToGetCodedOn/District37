@@ -2,6 +2,47 @@ import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled, { useTheme } from 'styled-components';
 import { AuthContext } from '../context/AuthContext';
+import { FaEye, FaEyeSlash } from 'react-icons/fa'; 
+
+
+
+const Input = styled.input`
+  width: 90%;
+  padding: 0.8rem 1rem;
+  margin-bottom: 1rem;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background-color: ${({ theme }) => theme.body};
+  color: ${({ theme }) => theme.text};
+  transition: border-color 0.3s ease;
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.accent};
+  }
+`;
+
+const PasswordInputWrapper = styled.div`
+  position: relative;
+  width: 90%;
+  margin-bottom: 1rem;
+`;
+
+const PasswordInput = styled(Input)`
+  padding-right: 2.5rem;
+  width: 94%;
+`;
+
+const TogglePasswordButton = styled.button`
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: ${({ theme }) => theme.text};
+  cursor: pointer;
+`;
 
 const FormContainer = styled.div`
   display: flex;
@@ -27,21 +68,6 @@ const Heading = styled.h2`
   text-align: center;
 `;
 
-const Input = styled.input`
-  width: 90%;
-  padding: 0.8rem 1rem;
-  margin-bottom: 1rem;
-  border: 2px solid transparent;
-  border-radius: 8px;
-  background-color: ${({ theme }) => theme.body};
-  color: ${({ theme }) => theme.text};
-  transition: border-color 0.3s ease;
-
-  &:focus {
-    outline: none;
-    border-color: ${({ theme }) => theme.accent};
-  }
-`;
 
 const SubmitButton = styled.button`
   width: 100%;
@@ -65,6 +91,8 @@ const ErrorText = styled.p`
   color: red;
   font-size: 0.9rem;
   margin-bottom: 1rem;
+  background-color:#E57373
+  border-radius: 8px
 `;
 
 const RegisterText = styled.p`
@@ -92,6 +120,7 @@ const LoginForm = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const theme = useTheme();
+  const [showPassword, setShowPassword] = useState(false);
 
   // AuthContext holen
   const { login } = useContext(AuthContext);
@@ -149,13 +178,25 @@ login(data.token, role);
           required
         />
 
-        <Input
-          type="password"
-          placeholder="Passwort"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <PasswordInputWrapper>
+  <PasswordInput
+    type={showPassword ? 'text' : 'password'}
+    placeholder="Passwort"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    required
+    id="pwd"
+  />
+  <TogglePasswordButton
+    type="button"
+    onClick={() => setShowPassword((prev) => !prev)}
+    aria-label="Passwort anzeigen/verstecken"
+    className='togglepwd'
+  >
+    {showPassword ? <FaEyeSlash /> : <FaEye />}
+  </TogglePasswordButton>
+</PasswordInputWrapper>
+        
 
         <SubmitButton type="submit">Einloggen</SubmitButton>
 

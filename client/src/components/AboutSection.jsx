@@ -1,5 +1,5 @@
 import React from "react";
-import styled, { ThemeProvider } from 'styled-components';
+import styled from 'styled-components';
 import { GlobalStyle } from "../assets/GlobalStyle";
 
 
@@ -11,7 +11,7 @@ color: ${({ theme }) => theme.text}`
 
 
 
-export default function AboutSection ({ darkMode }){
+export default function AboutSection (){
 
   
   return (

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const FormWrapper = styled.form`
   max-width: 400px;
@@ -10,7 +11,6 @@ const FormWrapper = styled.form`
   color: ${({ theme }) => theme.text};
   border-radius: 20px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-  transition: background 0.3s ease, color 0.3s ease;
 `;
 
 const Heading = styled.h2`
@@ -23,17 +23,13 @@ const InputGroup = styled.div`
   display: flex;
   flex-direction: column;
   margin-bottom: 1rem;
-`;
-
-const Label = styled.label`
-  font-weight: 600;
-  margin-bottom: 0.5rem;
+  position: relative;
 `;
 
 const Input = styled.input`
-    width: 90%;
+  width: 90%;
   padding: 0.8rem 1rem;
-  margin-bottom: 1rem;
+  padding-right: 2.5rem;
   border: 2px solid transparent;
   border-radius: 8px;
   background-color: ${({ theme }) => theme.body};
@@ -44,6 +40,17 @@ const Input = styled.input`
     outline: none;
     border-color: ${({ theme }) => theme.accent};
   }
+`;
+
+const TogglePasswordButton = styled.button`
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: ${({ theme }) => theme.text};
+  cursor: pointer;
 `;
 
 const Message = styled.p`
@@ -61,7 +68,6 @@ const Button = styled.button`
   background-color: ${({ theme }) => theme.accent};
   color: #fff;
   cursor: pointer;
-  transition: background 0.3s ease;
 
   &:hover {
     background-color: ${({ theme }) => theme.text};
@@ -87,25 +93,36 @@ function RegisterForm() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage('');
+
+    if (password !== confirmPassword) {
+      setMessage('Passwörter stimmen nicht überein');
+      return;
+    }
+
     try {
       const res = await fetch('http://localhost:8080/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password }),
       });
+
       const data = await res.json();
       if (res.ok) {
         setMessage('Registrierung erfolgreich! Bitte logge dich ein.');
         setName('');
         setEmail('');
         setPassword('');
-        navigate('/login')
+        setConfirmPassword('');
+        navigate('/login');
       } else {
         setMessage(data.message || 'Fehler bei der Registrierung');
       }
@@ -125,13 +142,12 @@ function RegisterForm() {
       {message && <Message>{message}</Message>}
 
       <InputGroup>
-        
         <Input
           type="text"
           value={name}
           onChange={e => setName(e.target.value)}
           required
-          placeholder='Name'
+          placeholder="Name"
         />
       </InputGroup>
 
@@ -141,18 +157,42 @@ function RegisterForm() {
           value={email}
           onChange={e => setEmail(e.target.value)}
           required
-          placeholder='Email'
+          placeholder="Email"
         />
       </InputGroup>
 
       <InputGroup>
         <Input
-          type="password"
+          type={showPassword ? 'text' : 'password'}
           value={password}
           onChange={e => setPassword(e.target.value)}
           required
-          placeholder='Passwort'
+          placeholder="Passwort"
         />
+        <TogglePasswordButton
+          type="button"
+          onClick={() => setShowPassword(prev => !prev)}
+          aria-label="Passwort anzeigen/verstecken"
+        >
+          {showPassword ? <FaEyeSlash /> : <FaEye />}
+        </TogglePasswordButton>
+      </InputGroup>
+
+      <InputGroup>
+        <Input
+          type={showConfirmPassword ? 'text' : 'password'}
+          value={confirmPassword}
+          onChange={e => setConfirmPassword(e.target.value)}
+          required
+          placeholder="Passwort bestätigen"
+        />
+        <TogglePasswordButton
+          type="button"
+          onClick={() => setShowConfirmPassword(prev => !prev)}
+          aria-label="Passwort bestätigen anzeigen/verstecken"
+        >
+          {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+        </TogglePasswordButton>
       </InputGroup>
 
       <Button type="submit">Registrieren</Button>

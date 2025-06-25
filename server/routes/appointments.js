@@ -1,39 +1,52 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const Appointment = require('../models/Appointment');
-const { auth } = require('../middleware/auth');
-const services = require('../config/services');
+import Appointment from '../models/Appointment'
 
-const MAX_SLOTS_PER_DAY = 7;
 
-router.post('/', auth, async (req, res) => {
-  const { date, time, participants, isGroup, serviceId } = req.body;
-
-  const service = services.find(s => s.id === serviceId);
-  if (!service) return res.status(400).json({ message: 'Ungültiger Service' });
-
-  const appointments = await Appointment.find({ date });
-  const usedSlots = appointments.reduce((sum, a) => sum + a.participants, 0);
-
-  if (usedSlots + participants > MAX_SLOTS_PER_DAY) {
-    return res.status(400).json({ message: 'Nicht genügend Slots verfügbar' });
-  }
-
-  const appointment = new Appointment({
-    userId: req.user.id,
-    date,
-    time,
-    participants,
-    isGroup,
-    service: {
-      id: service.id,
-      name: service.name,
-      price: service.price
-    }
-  });
-
-  await appointment.save();
-  res.status(201).json({ message: 'Termin erfolgreich gebucht' });
+router.post('/', async (req, res) => {
+  try {
+  const {userId, date, time, participants, isgroup, service} = req.body;
+  const newAppointment = new Appointment({userId, date, time, participants, isgroup, service});
+  const savedAppointment= await newAppointment.save();
+  res.status(201).json(savedAppointment);
+} catch (err) {
+  res.status(400).json({ error: err.message});
+}
 });
 
-module.exports = router;
+
+router.get('/', async (req, res) => {
+  try {
+    const appointments = await Appointment.find();
+    res.json(appointments);
+  } catch (err) {
+    res.status(500).json({ error: err.message});
+  }
+});
+
+
+router.put('/:id', async (req, res) => {
+  try {
+    const updatedAppointment = await Appointment.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { new: true, runValidators: true}
+  );
+  if (!updatedAppointment) return res.status(404).json({ error: 'Appointment not found'});
+  res.json(updatedAppointment);
+} catch (err) {
+  res.status(400).json({ error: err.message})
+}
+});
+
+
+router.delete('/:id', async (req, res) => {
+  try {
+    const deletedAppointment = await Service.findByIdAndDelete(req.params.id);
+    if (!deletedAppointment) return res.status(404).json({ error : err.message})
+  } catch (err) {
+res.status(500).json({ error: err.message})
+}
+});
+
+export default router

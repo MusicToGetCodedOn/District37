@@ -51,6 +51,31 @@ export const GlobalStyle = createGlobalStyle`
     transform: translateY(0);
   }
 
+  .cancelbutton{
+      padding: 0.75rem 1.5rem;
+    margin-top: 2%;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #d25858;
+    color: white;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    text-decoration: none;
+    }
+
+    .cancelbutton:hover {
+    background-color:red;
+    transform: translateY(-2px);
+    color: #fff;
+  }
+
+  .cancelbutton:active {
+    transform: translateY(0);
+  }
+    
+
   .locationsection {
     padding: 2rem;
     background-color: ${({ theme }) => theme.card};

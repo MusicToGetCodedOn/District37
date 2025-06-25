@@ -49,8 +49,8 @@ const ServiceForm = ({ initialData, onSave, onCancel }) => {
           className="inputfield"
         />
         <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button type="submit" onClick={handleSubmit}>Speichern</button>
-          <button type="button" onClick={onCancel}>Abbrechen</button>
+          <button type="submit" onClick={handleSubmit} className='bookbutton'>Speichern</button>
+          <button type="button" onClick={onCancel} className='cancelbutton'>Abbrechen</button>
         </div>
       </form>
     </div>

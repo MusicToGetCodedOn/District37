@@ -22,10 +22,10 @@ const CalendarSection = styled.div`
 const SelectedDate = styled.div`
   margin-bottom: 1rem;
   color: ${({ theme }) => theme.text};
-  background-color:${({ theme }) => theme.card};
+  background-color: ${({ theme }) => theme.card};
   padding: .5rem;
-  border-radius:8px;
-  text-align:start;
+  border-radius: 8px;
+  text-align: start;
 `;
 
 const CalendarHeader = styled.div`
@@ -73,6 +73,7 @@ const Day = styled.div`
     disabled ? '#fff' :
     status === 'full' ? '#fff' :
     '#000'};
+  opacity: ${({ disabled }) => (disabled ? 0.5 : 1)}; /* Ausgebleichte Darstellung für vergangene Tage */
 `;
 
 const TimeSlot = styled.button`
@@ -208,6 +209,9 @@ export default function BookingForm() {
   const [services, setServices] = useState([]);
   const theme = useTheme(); // Holen des aktuellen Themes
 
+  // Aktuelles Datum und Zeit (06:46 PM CEST, 26. Juni 2025)
+  const today = new Date('2025-06-26T18:46:00+02:00');
+
   // Fetch appointments
   useEffect(() => {
     axios.get('/api/appointments')
@@ -278,7 +282,7 @@ export default function BookingForm() {
     setSelectedTime(null);
   };
 
-  // Determine day status based on bookings
+  // Determine day status based on bookings and past dates
   const getDayStatus = (date) => {
     if (!date) return 'disabled';
     const dateString = date.toISOString().split('T')[0];
@@ -286,9 +290,12 @@ export default function BookingForm() {
     const totalSlots = 6; // 18:00–20:30 = 6 Slots
     const bookedSlots = dayAppointments.length;
 
-    if (bookedSlots === 0) return 'free';
-    if (bookedSlots < totalSlots * 0.3) return 'some';
-    if (bookedSlots < totalSlots * 0.8) return 'almost';
+    // Prüfe, ob der Tag in der Vergangenheit liegt
+    if (date < today) return 'disabled';
+
+    if (bookedSlots < 3) return 'free';
+    if (bookedSlots < 4) return 'some';
+    if (bookedSlots < 6) return 'almost';
     return 'full';
   };
 
@@ -400,9 +407,9 @@ export default function BookingForm() {
             <Day
               key={index}
               status={day ? getDayStatus(day) : 'disabled'}
-              disabled={!day}
+              disabled={!day || (day && day < today)}
               selected={day && selectedDate && day.toDateString() === selectedDate.toDateString()}
-              onClick={() => day && setSelectedDate(day)}
+              onClick={() => day && day >= today && setSelectedDate(day)}
             >
               {day ? day.getDate() : ''}
             </Day>
@@ -487,10 +494,10 @@ export default function BookingForm() {
             onChange={(e) => setFormData({ ...formData, serviceId: e.target.value })}
             required
           >
-            <option value="">Wählen Sie einen Service</option>
+            <option value="">Wählen</option>
             {services.map(service => (
               <option key={service._id} value={service._id}>
-                {service.name} (${service.price})
+                {service.name} - {service.price} .-
               </option>
             ))}
           </Select>

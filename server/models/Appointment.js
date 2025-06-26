@@ -7,7 +7,6 @@ const appointmentSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator: function(v) {
-        // Validierung: Datum im Format YYYY-MM-DD
         return /^\d{4}-\d{2}-\d{2}$/.test(v);
       },
       message: props => `${props.value} ist kein gültiges Datum (YYYY-MM-DD erforderlich)!`
@@ -25,7 +24,21 @@ const appointmentSchema = new mongoose.Schema({
     id: { type: mongoose.Schema.Types.ObjectId, ref: 'Service', required: true },
     name: { type: String, required: true },
     price: { type: Number, required: true }
+  },
+  expireAt: { type: Date, index: { expires: '0s' } } // TTL-Index mit sofortigem Ablauf
+},
+{
+  timestamps: true
+});
+
+// Pre-Save-Hook, um expireAt zu berechnen
+appointmentSchema.pre('save', function(next) {
+  if (this.isModified('date') || this.isNew) {
+    const date = new Date(this.date);
+    date.setDate(date.getDate() + 30); // 30 Tage hinzufügen
+    this.expireAt = date;
   }
+  next();
 });
 
 export default mongoose.model('Appointment', appointmentSchema);

@@ -102,9 +102,6 @@ export default function Header({ darkMode, setDarkMode }) {
   const { isLoggedIn, role, logout, isAuthReady } = useContext(AuthContext);
 
 if (!isAuthReady) return null;
-console.log({ isLoggedIn, role });
-
-console.log("Darkmode header ?" , darkMode)
 
   const handleLogout = () => {
     logout();

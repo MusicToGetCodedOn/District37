@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ServiceList from './ServiceList';
 import ServiceForm from './ServiceForm';
+import AppointmentList from './AppointmentList'; // Import der neuen Komponente
 
 const Dashboard = () => {
   const [editingService, setEditingService] = useState(null);
@@ -33,11 +34,15 @@ const Dashboard = () => {
           onCancel={() => setShowForm(false)}
         />
       ) : (
-        <ServiceList
-          key={reloadFlag} // zwingt Neu-Render
-          onEdit={handleEdit}
-          onCreate={handleCreate}
-        />
+        <>
+          <ServiceList
+            key={reloadFlag} // zwingt Neu-Render
+            onEdit={handleEdit}
+            onCreate={handleCreate}
+          />
+          <h3 style={{ marginTop: '2rem' }}>Terminübersicht</h3>
+          <AppointmentList />
+        </>
       )}
     </div>
   );

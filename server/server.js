@@ -27,6 +27,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/appointments', appointmentRoutes);
+app.use('api/auth:id', authRoutes)
 
 const PORT = process.env.PORT || 8080;
 const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017/District37';
@@ -38,4 +39,17 @@ mongoose.connect(MONGO_URL).then(() => {
   });
 }).catch((err) => {
   console.error("Error connecting to MongoDB:", err);
+});
+
+mongoose.connection.on('error', (err) => {
+  console.error('MongoDB connection error:', err);
+});
+
+// Optional: Index-Überprüfung
+mongoose.connection.on('connected', () => {
+  mongoose.model('Appointment').createIndexes().then(() => {
+    console.log('Indexes for Appointment model created or verified');
+  }).catch(err => {
+    console.error('Error creating indexes:', err);
+  });
 });

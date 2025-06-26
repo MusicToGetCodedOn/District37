@@ -5,11 +5,10 @@ import { auth, requireRole } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Neue Route: Verfügbare Zeitfenster für ein Datum abrufen
+
 router.get('/available/:date', async (req, res) => {
   try {
     const { date } = req.params;
-    // Validierung des Datumsformats
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
       return res.status(400).json({ error: 'Ungültiges Datumsformat (YYYY-MM-DD erforderlich)' });
     }
@@ -24,7 +23,7 @@ router.get('/available/:date', async (req, res) => {
   }
 });
 
-// Alle Termine abrufen
+
 router.get('/', async (req, res) => {
   try {
     const appointments = await Appointment.find();
@@ -34,17 +33,17 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Termin erstellen (geschützt durch auth-Middleware)
+
 router.post('/', auth, async (req, res) => {
   try {
     const { date, time, participants, isGroup, service } = req.body;
-    const userId = req.user._id; // userId aus JWT-Token
+    const userId = req.user._id; 
 
-    // Validierung des Dienstes
+ 
     const serviceDoc = await Service.findById(service.id);
     if (!serviceDoc) return res.status(404).json({ error: 'Service nicht gefunden' });
 
-    // Gruppenbuchungslogik
+
     const appointments = [];
     if (isGroup && participants > 1) {
       const timeSlots = ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30'];
@@ -53,7 +52,7 @@ router.post('/', auth, async (req, res) => {
         return res.status(400).json({ error: 'Ungültige Startzeit' });
       }
 
-      // Prüfen, ob genügend aufeinanderfolgende Slots verfügbar sind
+
       for (let i = 0; i < participants; i++) {
         const slotTime = timeSlots[startIndex + i];
         if (!slotTime) {
@@ -65,7 +64,7 @@ router.post('/', auth, async (req, res) => {
         }
       }
 
-      // Gruppenbuchungen erstellen
+
       for (let i = 0; i < participants; i++) {
         const slotTime = timeSlots[startIndex + i];
         const newAppointment = new Appointment({
@@ -79,7 +78,7 @@ router.post('/', auth, async (req, res) => {
         appointments.push(await newAppointment.save());
       }
     } else {
-      // Einzelbuchung
+
       const existing = await Appointment.findOne({ date, time });
       if (existing) {
         return res.status(400).json({ error: `Zeitfenster ${time} bereits gebucht` });
@@ -101,21 +100,21 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
-// Termin aktualisieren (nur für Admins)
+
 router.put('/:id', [auth, requireRole('admin')], async (req, res) => {
   try {
     const { id } = req.params;
     const { date, time, participants, isGroup, service } = req.body;
 
-    // Validierung des Dienstes
+
     const serviceDoc = await Service.findById(service?.id);
     if (!serviceDoc) return res.status(404).json({ error: 'Service nicht gefunden' });
 
-    // Prüfen, ob der Termin existiert
+
     const existingAppointment = await Appointment.findById(id);
     if (!existingAppointment) return res.status(404).json({ error: 'Termin nicht gefunden' });
 
-    // Gruppenbuchungslogik (falls geändert)
+
     if (isGroup && participants > 1) {
       const timeSlots = ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30'];
       const startIndex = timeSlots.indexOf(time);
@@ -123,7 +122,7 @@ router.put('/:id', [auth, requireRole('admin')], async (req, res) => {
         return res.status(400).json({ error: 'Ungültige Startzeit' });
       }
 
-      // Prüfen, ob genügend aufeinanderfolgende Slots verfügbar sind
+
       for (let i = 0; i < participants; i++) {
         const slotTime = timeSlots[startIndex + i];
         if (!slotTime) {
@@ -132,14 +131,14 @@ router.put('/:id', [auth, requireRole('admin')], async (req, res) => {
         const existing = await Appointment.findOne({
           date,
           time: slotTime,
-          _id: { $ne: id } // Ignoriere den aktuellen Termin
+          _id: { $ne: id }
         });
         if (existing) {
           return res.status(400).json({ error: `Zeitfenster ${slotTime} bereits gebucht` });
         }
       }
 
-      // Lösche bestehende Gruppenbuchungen für diesen Termin
+
       if (existingAppointment.isGroup) {
         await Appointment.deleteMany({
           date: existingAppointment.date,
@@ -148,7 +147,7 @@ router.put('/:id', [auth, requireRole('admin')], async (req, res) => {
         });
       }
 
-      // Neue Gruppenbuchungen erstellen
+
       const appointments = [];
       for (let i = 0; i < participants; i++) {
         const slotTime = timeSlots[startIndex + i];
@@ -164,17 +163,17 @@ router.put('/:id', [auth, requireRole('admin')], async (req, res) => {
       }
       res.json(appointments);
     } else {
-      // Einzelbuchung
+
       const existing = await Appointment.findOne({
         date,
         time,
-        _id: { $ne: id } // Ignoriere den aktuellen Termin
+        _id: { $ne: id } 
       });
       if (existing) {
         return res.status(400).json({ error: `Zeitfenster ${time} bereits gebucht` });
       }
 
-      // Lösche alte Gruppenbuchungen, falls vorhanden
+
       if (existingAppointment.isGroup) {
         await Appointment.deleteMany({
           date: existingAppointment.date,
@@ -183,7 +182,7 @@ router.put('/:id', [auth, requireRole('admin')], async (req, res) => {
         });
       }
 
-      // Einzeltermin aktualisieren
+
       const updatedAppointment = await Appointment.findByIdAndUpdate(
         id,
         {
@@ -202,8 +201,8 @@ router.put('/:id', [auth, requireRole('admin')], async (req, res) => {
   }
 });
 
-// Termin löschen (nur für Admins)
-router.delete('/:id', [auth, requireRole('admin')], async (req, res) => {
+
+router.delete('/:id', [auth, requireRole(['admin', 'superuser'])], async (req, res) => {
   try {
     const deletedAppointment = await Appointment.findByIdAndDelete(req.params.id);
     if (!deletedAppointment) return res.status(404).json({ error: 'Termin nicht gefunden' });

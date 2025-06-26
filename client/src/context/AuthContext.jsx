@@ -8,7 +8,7 @@ export function AuthProvider({ children }) {
   const [isAuthReady, setIsAuthReady] = useState(false);
 
   useEffect(() => {
-    // Initiales Laden aus localStorage
+    
     const token = localStorage.getItem('token');
     const storedRole = localStorage.getItem('role');
 
@@ -22,7 +22,7 @@ export function AuthProvider({ children }) {
     setIsAuthReady(true);
   }, []);
 
-  // Reagiere auf Änderungen von anderen Tabs
+
   useEffect(() => {
     const checkLogin = () => {
       const token = localStorage.getItem('token');

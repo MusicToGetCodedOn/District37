@@ -10,8 +10,7 @@ const AppointmentList = () => {
     try {
       const res = await axios.get('/api/appointments');
       setAppointments(res.data);
-      // Hole alle eindeutigen userIds
-      const userIds = [...new Set(res.data.map(appointment => appointment.userId))];
+      const userIds = [...new Set(res.data.map(appointment => appointment.userId))]; //user id's holen
       if (userIds.length > 0) {
         const userPromises = userIds.map(userId =>
           axios.get(`/api/auth/${userId}`).then(res => ({ [userId]: res.data }))
@@ -22,7 +21,7 @@ const AppointmentList = () => {
       }
     } catch (err) {
       console.error('Fehler beim Abrufen der Termine oder Benutzer:', err);
-      setAppointments([]); // Fallback auf leere Liste bei Fehler
+      setAppointments([]); //Fehlermeldung bei Error
     }
   };
 

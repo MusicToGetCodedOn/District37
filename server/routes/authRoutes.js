@@ -6,7 +6,7 @@ import User from '../models/User.js';
 
 const router = express.Router();
 
-// Register
+
 router.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -24,7 +24,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Login
+
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
@@ -58,7 +58,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Get user by ID
+
 router.get('/:id', async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select('name email');

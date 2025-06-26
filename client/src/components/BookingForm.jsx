@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled, { useTheme } from 'styled-components';
 import axios from 'axios';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { jwtDecode } from 'jwt-decode';
 
 const BookingContainer = styled.div`
   display: flex;
@@ -207,10 +208,9 @@ export default function BookingForm() {
     serviceId: '',
   });
   const [services, setServices] = useState([]);
-  const theme = useTheme(); // Holen des aktuellen Themes
+  const theme = useTheme();
 
-  // Aktuelles Datum und Zeit (06:46 PM CEST, 26. Juni 2025)
-  const today = new Date('2025-06-26T18:46:00+02:00');
+  const today = new Date();
 
   // Fetch appointments
   useEffect(() => {
@@ -222,7 +222,7 @@ export default function BookingForm() {
   // Fetch available time slots when a date is selected
   useEffect(() => {
     if (selectedDate) {
-      const dateString = selectedDate.toISOString().split('T')[0];
+      const dateString = selectedDate.toLocaleDateString('en-CA'); // Lokales Datum
       axios.get(`/api/appointments/available/${dateString}`)
         .then(res => setAvailableSlots(res.data))
         .catch(err => console.error(err));
@@ -238,7 +238,7 @@ export default function BookingForm() {
       .catch(err => console.error(err));
   }, []);
 
-  // Generate days for the current month, excluding Sa and So
+  // Generate days for the current month, excluding Saturday and Sunday
   const getMonthDays = () => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
@@ -246,13 +246,13 @@ export default function BookingForm() {
     const lastDay = new Date(year, month + 1, 0);
     const days = [];
 
-    // Starte mit dem ersten Montag
+    // Start with the first day
     let startDay = new Date(firstDay);
     while (startDay.getDay() !== 1) { // 1 = Montag
       startDay.setDate(startDay.getDate() + 1);
     }
 
-    // Füge Tage hinzu, nur Mo–Fr
+    // Add days
     for (let day = startDay.getDate(); day <= lastDay.getDate(); day++) {
       const currentDate = new Date(year, month, day);
       if (currentDate.getDay() >= 1 && currentDate.getDay() <= 5) { // Nur Mo–Fr (1–5)
@@ -260,7 +260,7 @@ export default function BookingForm() {
       }
     }
 
-    // Füge leere Tage für das Ende des Monats hinzu, um 5 Spalten pro Woche zu füllen
+    // Add empty day slots to 
     while (days.length % 5 !== 0) {
       days.push(null);
     }
@@ -285,12 +285,12 @@ export default function BookingForm() {
   // Determine day status based on bookings and past dates
   const getDayStatus = (date) => {
     if (!date) return 'disabled';
-    const dateString = date.toISOString().split('T')[0];
+    const dateString = date.toLocaleDateString('en-CA'); // Local Day
     const dayAppointments = appointments.filter(appt => appt.date === dateString);
     const totalSlots = 6; // 18:00–20:30 = 6 Slots
     const bookedSlots = dayAppointments.length;
 
-    // Prüfe, ob der Tag in der Vergangenheit liegt
+    // Disable previous days
     if (date < today) return 'disabled';
 
     if (bookedSlots < 3) return 'free';
@@ -308,8 +308,10 @@ export default function BookingForm() {
     }
 
     try {
-      const dateString = selectedDate.toISOString().split('T')[0];
-      const token = localStorage.getItem('token'); // Token aus localStorage
+      // Using toLocaleDateString for local Date
+      const dateString = selectedDate.toLocaleDateString('en-CA'); // YYYY-MM-DD
+      const token = localStorage.getItem('token'); // Token from localStorage
+      console.log('Sending appointment data:', { date: dateString, time: selectedTime, ...formData }); // Debug-Log
       const appointmentsToSave = [];
       const participants = formData.isGroup ? formData.participants : 1;
 
@@ -321,7 +323,7 @@ export default function BookingForm() {
           return;
         }
 
-        // Prüfen, ob genügend aufeinanderfolgende Slots verfügbar sind
+        // Group slot checking
         for (let i = 0; i < participants; i++) {
           const slotTime = timeSlots[startIndex + i];
           if (!slotTime || !availableSlots.includes(slotTime)) {
@@ -330,11 +332,11 @@ export default function BookingForm() {
           }
         }
 
-        // Gruppenbuchungen erstellen
+        // Groupappointment creation
         for (let i = 0; i < participants; i++) {
           const slotTime = timeSlots[startIndex + i];
           appointmentsToSave.push({
-            userId: 'sample-user-id', // Platzhalter, ersetze mit realer User-ID
+            userId: token ? jwtDecode(token)._id || 'sample-user-id' : 'sample-user-id', // Using jwt-decode
             date: dateString,
             time: slotTime,
             participants: 1,
@@ -352,7 +354,7 @@ export default function BookingForm() {
           return;
         }
         appointmentsToSave.push({
-          userId: 'sample-user-id', // Platzhalter, ersetze mit realer User-ID
+          userId: token ? jwtDecode(token)._id || 'sample-user-id' : 'sample-user-id', //Using jwt-decode
           date: dateString,
           time: selectedTime,
           participants,
@@ -376,8 +378,8 @@ export default function BookingForm() {
       setSelectedTime(null);
       setAvailableSlots([]);
     } catch (err) {
-      console.error(err);
-      alert('Buchung fehlgeschlagen: ' + err.message);
+      console.error('Error details:', err.response ? err.response.data : err.message);
+      alert('Buchung fehlgeschlagen: ' + (err.response ? err.response.data.message || err.message : err.message));
     }
   };
 

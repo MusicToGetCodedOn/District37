@@ -25,7 +25,7 @@ const appointmentSchema = new mongoose.Schema({
     name: { type: String, required: true },
     price: { type: Number, required: true }
   },
-  expireAt: { type: Date, index: { expires: '0s' } } // TTL-Index mit sofortigem Ablauf
+  expireAt: { type: Date, index: { expires: '0s' } } 
 },
 {
   timestamps: true
@@ -35,7 +35,7 @@ const appointmentSchema = new mongoose.Schema({
 appointmentSchema.pre('save', function(next) {
   if (this.isModified('date') || this.isNew) {
     const date = new Date(this.date);
-    date.setDate(date.getDate() + 30); // 30 Tage hinzufügen
+    date.setDate(date.getDate() + 30); 
     this.expireAt = date;
   }
   next();

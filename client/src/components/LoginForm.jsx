@@ -124,7 +124,7 @@ const LoginForm = () => {
   const theme = useTheme();
   const [showPassword, setShowPassword] = useState(false);
 
-  // AuthContext holen
+  
   const { login } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
@@ -144,17 +144,16 @@ const LoginForm = () => {
         throw new Error(data.message || 'Login fehlgeschlagen');
       }
 
-      // Token und Role aus response nehmen
+
       const token = data.token;
      const role = data.user?.role || '';
 localStorage.setItem('token', data.token);
 localStorage.setItem('role', role);
 login(data.token, role);
 
-      // Context login Funktion aufrufen
       login(token, role);
 
-      // navigate zur Startseite o.ä.
+
       navigate('/');
     } catch (err) {
       setError(err.message);

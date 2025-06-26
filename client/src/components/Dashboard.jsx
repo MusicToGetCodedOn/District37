@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import ServiceList from './ServiceList';
 import ServiceForm from './ServiceForm';
-import AppointmentList from './AppointmentList'; // Import der neuen Komponente
+import AppointmentList from './AppointmentList';
 
 const Dashboard = () => {
   const [editingService, setEditingService] = useState(null);
   const [showForm, setShowForm] = useState(false);
-  const [reloadFlag, setReloadFlag] = useState(false); // um neu zu laden
+  const [reloadFlag, setReloadFlag] = useState(false);
 
   const handleEdit = (service) => {
     setEditingService(service);
@@ -20,7 +20,7 @@ const Dashboard = () => {
 
   const handleSave = () => {
     setShowForm(false);
-    setReloadFlag(!reloadFlag); // toggeln, damit ServiceList neu lädt
+    setReloadFlag(!reloadFlag);
   };
 
   return (
@@ -36,7 +36,7 @@ const Dashboard = () => {
       ) : (
         <>
           <ServiceList
-            key={reloadFlag} // zwingt Neu-Render
+            key={reloadFlag} 
             onEdit={handleEdit}
             onCreate={handleCreate}
           />

@@ -11,10 +11,10 @@ import appointmentRoutes from './routes/appointments.js';
 const app = express();
 dotenv.config();
 
-// Rate-Limiting-Middleware
+
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 Minuten
-  max: 100 // Max. 100 Anfragen pro IP
+  max: 20 // Max. 20 Anfragen pro IP
 });
 app.use(limiter);
 
@@ -45,7 +45,7 @@ mongoose.connection.on('error', (err) => {
   console.error('MongoDB connection error:', err);
 });
 
-// Optional: Index-Überprüfung
+
 mongoose.connection.on('connected', () => {
   mongoose.model('Appointment').createIndexes().then(() => {
     console.log('Indexes for Appointment model created or verified');

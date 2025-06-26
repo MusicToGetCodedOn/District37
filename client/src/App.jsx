@@ -20,17 +20,16 @@ function App() {
   }, [darkMode]);
 
   return (
-    <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
-      <GlobalStyle />
       <AuthProvider>
-        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-          <Header darkMode={darkMode} setDarkMode={setDarkMode} />
-          <main style={{ flex: 1 }}>
-            <Outlet />
-          </main>
-        </div>        
+        <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
+          <GlobalStyle />
+            <Header darkMode={darkMode} setDarkMode={setDarkMode} />
+            <main style={{ flex: 1 }}>
+              <Outlet />
+            </main>  
+        </ThemeProvider>     
       </AuthProvider>
-    </ThemeProvider>
+    
   );
 }
 

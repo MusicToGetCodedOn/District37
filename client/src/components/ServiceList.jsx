@@ -49,6 +49,8 @@ const ServiceList = ({ onEdit, onCreate }) => {
             <th>Name</th>
             <th>Beschreibung</th>
             <th>Preis</th>
+            <th>Erstellt</th>
+            <th>zuletzt bearbeitet</th>
             <th>Aktionen</th>
           </tr>
         </thead>
@@ -57,7 +59,23 @@ const ServiceList = ({ onEdit, onCreate }) => {
             <tr key={service._id}>
               <td>{service.name}</td>
               <td>{service.desc}</td>
-              <td>{service.price} €</td>
+              <td>{service.price} .-</td>
+              <td>{new Date(service.createdAt).toLocaleString('de-DE', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </td>
+              <td>{new Date(service.updatedAt).toLocaleString('de-DE', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </td>
               <td className="action-buttons">
                 <button
                   onClick={() => onEdit(service)}

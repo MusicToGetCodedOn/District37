@@ -1,29 +1,18 @@
-import React from "react";
-import styled from 'styled-components';
-import { GlobalStyle } from "../assets/GlobalStyle";
-
-
-
-
-const StyledSection = styled.section`
-background-color: ${({ theme }) => theme.body}
-color: ${({ theme }) => theme.text}`
-
-
 
 export default function AboutSection (){
 
   
   return (
     <>
-      <GlobalStyle />
-        <StyledSection className="textp">
-          <p > 
+      
+        <div className="abouttext">
+          <p> 
               Lorem ipsum dolor, sit amet consectetur adipisicing elit. 
               Natus magni minima iusto obcaecati dolor ipsa ducimus veritatis perspiciatis adipisci blanditiis, 
               laboriosam maxime voluptatibus perferendis optio inventore, id aliquid! Dolores, saepe.
           </p>
-        </StyledSection>
+        </div>
+       
       
     </>
   );

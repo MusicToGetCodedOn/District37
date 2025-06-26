@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Moon, Sun } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import styled, { useTheme, ThemeProvider } from 'styled-components';
-import { lightTheme, darkTheme } from '../assets/theme';
 import { GlobalStyle } from '../assets/GlobalStyle';
 
 
@@ -103,9 +102,6 @@ export default function Header({ darkMode, setDarkMode }) {
   const { isLoggedIn, role, logout, isAuthReady } = useContext(AuthContext);
 
 if (!isAuthReady) return null;
-console.log({ isLoggedIn, role });
-
-console.log("Darkmode header ?" , darkMode)
 
   const handleLogout = () => {
     logout();

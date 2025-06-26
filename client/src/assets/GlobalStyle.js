@@ -13,14 +13,12 @@ export const GlobalStyle = createGlobalStyle`
     font-family: inherit;
   }
 
-  .shadow {
-    background-color: ${({ theme }) => theme.card};
-  }
-
-  .textp {
-    margin-top: 10%;
-    background-color: ${({ theme }) => theme.nav};
-    border-radius: 8px;
+  .abouttext {
+  display: block;
+  justify-content: center;
+  margin-top: 10%;
+  background-color: ${({ theme }) => theme.nav};
+  border-radius: 8px;
   }
 
   .textp:hover {
@@ -89,7 +87,6 @@ export const GlobalStyle = createGlobalStyle`
     margin: 0 auto;
   }
 
- /* Kalender Container */
 
 
 //ServiceList
@@ -119,6 +116,7 @@ export const GlobalStyle = createGlobalStyle`
   background-color: ${({ theme }) => theme.accent};
   color: white;
   border: none;
+  border-radius:8px;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -143,6 +141,41 @@ export const GlobalStyle = createGlobalStyle`
   border-bottom: 1px solid #ddd;
 }
 
+.servicecard{
+  width: 250px;
+  padding: 1.5rem;
+  border-radius: 12px;
+  background-color: ${({ theme }) => theme.card};
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: background-color 0.3s ease, transform 0.2s;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.accent};
+    transform: translateY(-3px);
+  }
+
+  h3 {
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    margin: 0.3rem 0;
+  }
+}
+
+.servicecontainer{
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-top: 2rem;
+  }
+
+.servicesection{
+  padding: 2rem;
+  text-align: center;
+  }
+
 .action-buttons {
   display: flex;
   gap: 0.5rem;
@@ -155,6 +188,8 @@ export const GlobalStyle = createGlobalStyle`
   cursor: pointer;
   font-size: 1rem;
   color: ${({ theme }) => theme.accent};
+  border-radius:8px;
+  padding: 10%;
 }
 
 .edit-button:hover {
@@ -174,8 +209,8 @@ export const GlobalStyle = createGlobalStyle`
 
 
 //forms
-.inputfield{
-width: 90%;
+.inputfield {
+  width: 90%;
   padding: 0.8rem 1rem;
   margin-bottom: 1rem;
   border: 2px solid transparent;
@@ -183,19 +218,147 @@ width: 90%;
   background-color: ${({ theme }) => theme.card};
   color: ${({ theme }) => theme.text};
   transition: border-color 0.3s ease;
-  }
+}
 
- .formcontainer{
- display: block;
+.formcontainer{
+  display: block;
   justify-content: center;
   align-items: center;
   padding: 4rem 2rem;
-background-color: ${({ theme }) => theme.nav};
+  background-color: ${({ theme }) => theme.nav};
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   max-width: 400px;
   width: 100%;
   transition: all 0.3s ease;
+}
+
+//Skeletonloaders
+.skeletonservice { 
+  background-color: #e2e2e2;
+  animation: pulse 1.5s infinite ease-in-out;
+
+  h3, p {
+    background-color: #ccc;
+    border-radius: 4px;
+    height: 1em;
+    width: 80%;
+    margin: 0.5rem auto;
   }
+
+  p:last-child {
+    width: 50%;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.4; }
+    100% { opacity: 1; }
+}   
+
+
+//Buttons
+.login {
+  background-color: ${({ theme }) => theme.nav};
+  border: none;
+  color: ${({ theme }) => theme.text};
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    background: ${({ theme }) => theme.accent};
+    transition: width 0.3s ease;
+  }
+
+  &:hover::after {
+    width: 100%;
+  }
+}
+
+.themetoggler {
+  background-color: ${({ theme }) => theme.nav};
+  border: none;
+  color: ${({ theme }) => theme.text};
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 1.3rem;
+
+  &:hover {
+    color: ${({ theme }) => theme.accent};
+  }
+}
+
+
+
+
+//header
+.headercontainer {
+  background-color: ${({ theme }) => theme.nav};
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 3rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 10;
+  border-radius: 30px;
+  width: 1200px;
+}
+
+.navlink {
+ text-decoration: none;
+  color: ${({ theme }) => theme.text};
+  font-size: 1.2rem;
+  font-weight: 600;
+  position: relative;
+
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    background: ${({ theme }) => theme.accent};
+    transition: width 0.3s ease;
+  }
+
+  &:hover::after {
+    width: 100%;
+  }
+}
+.logo {
+  font-size: 2rem;
+  color: ${({ theme }) => theme.accent};
+  margin: 0;
+  }
+
+.nav {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  }¨
+
+
+.new-badge {
+  background-color: #ff4d4f;
+  color: white;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  margin-left: 8px;
+  border-radius: 4px;
+  vertical-align: middle;
+}
+
+
 `;

@@ -1,52 +1,216 @@
 import express from 'express';
+import Appointment from '../models/Appointment.js';
+import Service from '../models/Services.js';
+import { auth, requireRole } from '../middleware/auth.js';
+
 const router = express.Router();
-import Appointment from '../models/Appointment'
 
-
-router.post('/', async (req, res) => {
+// Neue Route: Verfügbare Zeitfenster für ein Datum abrufen
+router.get('/available/:date', async (req, res) => {
   try {
-  const {userId, date, time, participants, isgroup, service} = req.body;
-  const newAppointment = new Appointment({userId, date, time, participants, isgroup, service});
-  const savedAppointment= await newAppointment.save();
-  res.status(201).json(savedAppointment);
-} catch (err) {
-  res.status(400).json({ error: err.message});
-}
+    const { date } = req.params;
+    // Validierung des Datumsformats
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return res.status(400).json({ error: 'Ungültiges Datumsformat (YYYY-MM-DD erforderlich)' });
+    }
+
+    const appointments = await Appointment.find({ date });
+    const timeSlots = ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30'];
+    const bookedSlots = appointments.map(appt => appt.time);
+    const availableSlots = timeSlots.filter(slot => !bookedSlots.includes(slot));
+    res.json(availableSlots);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-
+// Alle Termine abrufen
 router.get('/', async (req, res) => {
   try {
     const appointments = await Appointment.find();
     res.json(appointments);
   } catch (err) {
-    res.status(500).json({ error: err.message});
+    res.status(500).json({ error: err.message });
   }
 });
 
-
-router.put('/:id', async (req, res) => {
+// Termin erstellen (geschützt durch auth-Middleware)
+router.post('/', auth, async (req, res) => {
   try {
-    const updatedAppointment = await Appointment.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    { new: true, runValidators: true}
-  );
-  if (!updatedAppointment) return res.status(404).json({ error: 'Appointment not found'});
-  res.json(updatedAppointment);
-} catch (err) {
-  res.status(400).json({ error: err.message})
-}
-});
+    const { date, time, participants, isGroup, service } = req.body;
+    const userId = req.user._id; // userId aus JWT-Token
 
+    // Validierung des Dienstes
+    const serviceDoc = await Service.findById(service.id);
+    if (!serviceDoc) return res.status(404).json({ error: 'Service nicht gefunden' });
 
-router.delete('/:id', async (req, res) => {
-  try {
-    const deletedAppointment = await Service.findByIdAndDelete(req.params.id);
-    if (!deletedAppointment) return res.status(404).json({ error : err.message})
+    // Gruppenbuchungslogik
+    const appointments = [];
+    if (isGroup && participants > 1) {
+      const timeSlots = ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30'];
+      const startIndex = timeSlots.indexOf(time);
+      if (startIndex === -1) {
+        return res.status(400).json({ error: 'Ungültige Startzeit' });
+      }
+
+      // Prüfen, ob genügend aufeinanderfolgende Slots verfügbar sind
+      for (let i = 0; i < participants; i++) {
+        const slotTime = timeSlots[startIndex + i];
+        if (!slotTime) {
+          return res.status(400).json({ error: 'Nicht genügend aufeinanderfolgende Slots verfügbar' });
+        }
+        const existing = await Appointment.findOne({ date, time: slotTime });
+        if (existing) {
+          return res.status(400).json({ error: `Zeitfenster ${slotTime} bereits gebucht` });
+        }
+      }
+
+      // Gruppenbuchungen erstellen
+      for (let i = 0; i < participants; i++) {
+        const slotTime = timeSlots[startIndex + i];
+        const newAppointment = new Appointment({
+          userId,
+          date,
+          time: slotTime,
+          participants: 1,
+          isGroup: true,
+          service: { id: serviceDoc._id, name: serviceDoc.name, price: serviceDoc.price }
+        });
+        appointments.push(await newAppointment.save());
+      }
+    } else {
+      // Einzelbuchung
+      const existing = await Appointment.findOne({ date, time });
+      if (existing) {
+        return res.status(400).json({ error: `Zeitfenster ${time} bereits gebucht` });
+      }
+      const newAppointment = new Appointment({
+        userId,
+        date,
+        time,
+        participants,
+        isGroup,
+        service: { id: serviceDoc._id, name: serviceDoc.name, price: serviceDoc.price }
+      });
+      appointments.push(await newAppointment.save());
+    }
+
+    res.status(201).json(appointments);
   } catch (err) {
-res.status(500).json({ error: err.message})
-}
+    res.status(400).json({ error: err.message });
+  }
 });
 
-export default router
+// Termin aktualisieren (nur für Admins)
+router.put('/:id', [auth, requireRole('admin')], async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { date, time, participants, isGroup, service } = req.body;
+
+    // Validierung des Dienstes
+    const serviceDoc = await Service.findById(service?.id);
+    if (!serviceDoc) return res.status(404).json({ error: 'Service nicht gefunden' });
+
+    // Prüfen, ob der Termin existiert
+    const existingAppointment = await Appointment.findById(id);
+    if (!existingAppointment) return res.status(404).json({ error: 'Termin nicht gefunden' });
+
+    // Gruppenbuchungslogik (falls geändert)
+    if (isGroup && participants > 1) {
+      const timeSlots = ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30'];
+      const startIndex = timeSlots.indexOf(time);
+      if (startIndex === -1) {
+        return res.status(400).json({ error: 'Ungültige Startzeit' });
+      }
+
+      // Prüfen, ob genügend aufeinanderfolgende Slots verfügbar sind
+      for (let i = 0; i < participants; i++) {
+        const slotTime = timeSlots[startIndex + i];
+        if (!slotTime) {
+          return res.status(400).json({ error: 'Nicht genügend aufeinanderfolgende Slots verfügbar' });
+        }
+        const existing = await Appointment.findOne({
+          date,
+          time: slotTime,
+          _id: { $ne: id } // Ignoriere den aktuellen Termin
+        });
+        if (existing) {
+          return res.status(400).json({ error: `Zeitfenster ${slotTime} bereits gebucht` });
+        }
+      }
+
+      // Lösche bestehende Gruppenbuchungen für diesen Termin
+      if (existingAppointment.isGroup) {
+        await Appointment.deleteMany({
+          date: existingAppointment.date,
+          isGroup: true,
+          userId: existingAppointment.userId
+        });
+      }
+
+      // Neue Gruppenbuchungen erstellen
+      const appointments = [];
+      for (let i = 0; i < participants; i++) {
+        const slotTime = timeSlots[startIndex + i];
+        const newAppointment = new Appointment({
+          userId: existingAppointment.userId,
+          date,
+          time: slotTime,
+          participants: 1,
+          isGroup: true,
+          service: { id: serviceDoc._id, name: serviceDoc.name, price: serviceDoc.price }
+        });
+        appointments.push(await newAppointment.save());
+      }
+      res.json(appointments);
+    } else {
+      // Einzelbuchung
+      const existing = await Appointment.findOne({
+        date,
+        time,
+        _id: { $ne: id } // Ignoriere den aktuellen Termin
+      });
+      if (existing) {
+        return res.status(400).json({ error: `Zeitfenster ${time} bereits gebucht` });
+      }
+
+      // Lösche alte Gruppenbuchungen, falls vorhanden
+      if (existingAppointment.isGroup) {
+        await Appointment.deleteMany({
+          date: existingAppointment.date,
+          isGroup: true,
+          userId: existingAppointment.userId
+        });
+      }
+
+      // Einzeltermin aktualisieren
+      const updatedAppointment = await Appointment.findByIdAndUpdate(
+        id,
+        {
+          date,
+          time,
+          participants,
+          isGroup,
+          service: { id: serviceDoc._id, name: serviceDoc.name, price: serviceDoc.price }
+        },
+        { new: true, runValidators: true }
+      );
+      res.json(updatedAppointment);
+    }
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Termin löschen (nur für Admins)
+router.delete('/:id', [auth, requireRole('admin')], async (req, res) => {
+  try {
+    const deletedAppointment = await Appointment.findByIdAndDelete(req.params.id);
+    if (!deletedAppointment) return res.status(404).json({ error: 'Termin nicht gefunden' });
+    res.json({ message: 'Termin gelöscht' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+export default router;

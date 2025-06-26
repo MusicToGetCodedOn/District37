@@ -42,6 +42,8 @@ const TogglePasswordButton = styled.button`
   border: none;
   color: ${({ theme }) => theme.text};
   cursor: pointer;
+  margin-right: -10%;
+  margin-top: -2%;
 `;
 
 const FormContainer = styled.div`

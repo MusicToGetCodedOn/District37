@@ -22,7 +22,9 @@ const router = createBrowserRouter([
       },
       {
         path: '/appointment/',
-        element: <AppointmentRoute />
+        element:<ProtectedRoute allowedRoles={['user', 'admin', 'superuser']}>
+         <AppointmentRoute />
+         </ProtectedRoute>
       },
       {
         path: '/about/',

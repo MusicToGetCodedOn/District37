@@ -1,17 +1,16 @@
 import { GlobalStyle } from "../assets/GlobalStyle";
 import styled from "styled-components";
 
-
+    const StyledSection = styled.section`
+`
 
 
 export default function LocationSection(){
-    const StyledSection = styled.section`
-background-color: ${({ theme }) => theme.body};
-color: ${({ theme }) => theme.text}`;
+
 return (
     <>
         <GlobalStyle/>
-            <StyledSection className='locationsection'>
+            <section className='locationsection'>
                 <div className='mapcontainer'>
                     <iframe 
                     title="Google maps"
@@ -22,7 +21,7 @@ return (
                     allowFullScreen=""
                     loading="lazy"></iframe>
                 </div>
-            </StyledSection>
+            </section>
     </>
 )
 }

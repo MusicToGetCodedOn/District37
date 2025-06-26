@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Moon, Sun } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import styled, { useTheme, ThemeProvider } from 'styled-components';
-import { lightTheme, darkTheme } from '../assets/theme';
 import { GlobalStyle } from '../assets/GlobalStyle';
 
 

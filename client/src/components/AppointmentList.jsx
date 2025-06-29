@@ -8,12 +8,24 @@ const AppointmentList = () => {
 
   const fetchAppointments = async () => {
     try {
-      const res = await axios.get('/api/appointments');
+      const token = localStorage.getItem('token');
+      console.log('Token:', token); // Debugging
+      if (!token) {
+        console.error('Kein Token vorhanden, bitte als Admin anmelden.');
+        setAppointments([]);
+        return;
+      }
+
+      const res = await axios.get('http://localhost:8080/api/appointments', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setAppointments(res.data);
-      const userIds = [...new Set(res.data.map(appointment => appointment.userId))]; //user id's holen
+      const userIds = [...new Set(res.data.map(appointment => appointment.userId).filter(id => id))];
       if (userIds.length > 0) {
         const userPromises = userIds.map(userId =>
-          axios.get(`/api/auth/${userId}`).then(res => ({ [userId]: res.data }))
+          axios.get(`http://localhost:8080/api/auth/${userId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          }).then(res => ({ [userId]: res.data }))
         );
         const userResponses = await Promise.all(userPromises);
         const usersMap = userResponses.reduce((acc, curr) => ({ ...acc, ...curr }), {});
@@ -21,7 +33,10 @@ const AppointmentList = () => {
       }
     } catch (err) {
       console.error('Fehler beim Abrufen der Termine oder Benutzer:', err);
-      setAppointments([]); //Fehlermeldung bei Error
+      if (err.response && err.response.status === 403) {
+        console.error('403 Forbidden: Möglicherweise keine Admin-Rolle.');
+      }
+      setAppointments([]); // Fehlermeldung bei Error
     }
   };
 
@@ -32,8 +47,8 @@ const AppointmentList = () => {
   const filtered = Array.isArray(appointments)
     ? appointments.filter(appointment => {
         const user = users[appointment.userId] || {};
-        const name = user.name || '';
-        const email = user.email || '';
+        const name = user.name || appointment.customerName || '';
+        const email = user.email || appointment.customerEmail || '';
         return (
           name.toLowerCase().includes(search.toLowerCase()) ||
           email.toLowerCase().includes(search.toLowerCase())
@@ -56,10 +71,10 @@ const AppointmentList = () => {
       <table className="service-table">
         <thead>
           <tr>
-            <th>Name</th>
+            <th>Gebucht von</th>
             <th>Email</th>
             <th>IsGroup</th>
-            <th>Anzahl Personen</th>
+            <th>Kunde</th>
             <th>Service</th>
             <th>Datum</th>
             <th>Zeit</th>
@@ -68,13 +83,14 @@ const AppointmentList = () => {
         <tbody>
           {filtered.map(appointment => {
             const user = users[appointment.userId] || {};
+            const person = appointment.persons[0] || {}; // Erste Person als Repräsentation
             return (
               <tr key={appointment._id}>
-                <td>{user.name || 'Nicht angegeben'}</td>
-                <td>{user.email || 'Nicht angegeben'}</td>
+                <td>{user.name || appointment.customerName || 'Nicht angegeben'}</td>
+                <td>{user.email || appointment.customerEmail || 'Nicht angegeben'}</td>
                 <td>{appointment.isGroup ? 'Ja' : 'Nein'}</td>
-                <td>{appointment.participants || 0}</td>
-                <td>{appointment.service?.name || 'Unbekannt'}</td>
+                <td>{person.name}</td>
+                <td>{person.serviceName || 'Unbekannt'}</td>
                 <td>{appointment.date}</td>
                 <td>{appointment.time}</td>
               </tr>
@@ -82,7 +98,7 @@ const AppointmentList = () => {
           })}
           {filtered.length === 0 && (
             <tr>
-              <td colSpan="5" className="no-results">Keine Termine gefunden.</td>
+              <td colSpan="7" className="no-results">Keine Termine gefunden.</td>
             </tr>
           )}
         </tbody>

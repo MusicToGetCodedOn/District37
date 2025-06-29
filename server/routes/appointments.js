@@ -29,7 +29,7 @@ router.get('/public', async (req, res) => {
 });
 
 // Alle Termine abrufen (nur Admin)
-router.get('/', auth, requireRole('admin'), async (req, res) => {
+router.get('/', auth, requireRole(['admin', 'superuser']), async (req, res) => {
   try {
     const appointments = await Appointment.find().populate('userId', 'username email');
     res.json(appointments);

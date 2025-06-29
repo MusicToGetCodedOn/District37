@@ -1,196 +1,173 @@
 import React, { useState, useEffect } from 'react';
 import styled, { useTheme } from 'styled-components';
 import axios from 'axios';
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { FaArrowLeft, FaArrowRight, FaPlus } from 'react-icons/fa';
+import Switch from './Switch';
+import PersonForm from './Personform';
 
 const BookingContainer = styled.div`
   display: flex;
   gap: 2rem;
   padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+  background-color: ${({ theme }) => theme.card};
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 900px;
+  margin: 2rem auto;
 `;
 
 const CalendarSection = styled.div`
   flex: 1;
-  background-color: ${({ theme }) => theme.card};
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-`;
-
-const SelectedDate = styled.div`
-  margin-bottom: 1rem;
-  color: ${({ theme }) => theme.text};
-  background-color: ${({ theme }) => theme.card};
-  padding: .5rem;
-  border-radius: 8px;
-  text-align: start;
-`;
-
-const CalendarHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-`;
-
-const CalendarNavButton = styled.button`
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
-  padding: 0.5rem;
-  color: ${({ theme }) => theme.text};
-  &:hover {
-    color: ${({ theme }) => theme.accent};
-  }
-`;
-
-const CalendarMonth = styled.h2`
-  margin: 0;
-`;
-
-const CalendarGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 0.5rem;
-`;
-
-const Day = styled.div`
-  padding: 0.5rem;
-  text-align: center;
-  border-radius: 4px;
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
-  background-color: ${({ status, disabled, selected, theme }) =>
-    selected ? theme.calendarSelected :
-    disabled ? theme.calendarDisabled :
-    status === 'full' ? theme.calendarFull :
-    status === 'free' ? theme.calendarFree :
-    status === 'some' ? theme.calendarSome :
-    theme.calendarAlmost};
-  color: ${({ status, disabled }) =>
-    disabled ? '#fff' :
-    status === 'full' ? '#fff' :
-    '#000'};
-  opacity: ${({ disabled }) => (disabled ? 0.5 : 1)}; /* Ausgebleichte Darstellung für vergangene Tage */
-`;
-
-const TimeSlot = styled.button`
-  padding: 0.5rem;
-  margin: 0.2rem;
-  border: none;
-  border-radius: 4px;
-  background-color: ${({ disabled, selected, theme }) =>
-    selected ? theme.calendarSelected :
-    disabled ? '#d3d3d3' : theme.accent};
-  color: ${({ disabled, selected }) => (disabled ? '#888' : selected ? '#000' : '#fff')};
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
-  border: ${({ selected }) => (selected ? '2px solid #000' : 'none')};
 `;
 
 const FormSection = styled.div`
   flex: 1;
-  background-color: ${({ theme }) => theme.nav};
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+`;
+
+const CalendarContainer = styled.div`
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+`;
+
+const CalendarHeader = styled.div`
+  background-color: ${({ theme }) => theme.accent};
+  color: white;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const MonthName = styled.h2`
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+`;
+
+const ArrowButton = styled.button`
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0.2rem;
+  
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+`;
+
+const DaysGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+`;
+
+const Day = styled.div`
+  padding: 0.8rem;
+  text-align: center;
+  border: 1px solid #eee;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  color: ${({ theme }) => theme.text};
+
+  &:hover {
+    background-color: #f9f9f9;
+  }
+
+  &.selected {
+    background-color: ${({ theme }) => theme.primary};
+    color: white;
+  }
+
+  &.today {
+    font-weight: bold;
+  }
+
+  &.available {
+    color: ${({ theme }) => theme.primary};
+  }
+
+  &.booked {
+    color: #aaa;
+    cursor: not-allowed;
+  }
+`;
+
+const TimeSlots = styled.div`
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+`;
+
+const TimeSlotButton = styled.button`
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background-color: ${({ $isSelected, theme }) => ($isSelected ? theme.primary : theme.accent)};
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: ${({ $isSelected, theme }) => ($isSelected ? theme.primaryhover : theme.accenthover)};
+  }
+
+  &.disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+`;
+
+const SelectedDate = styled.div`
+  margin-top: 1rem;
+  font-weight: bold;
+  color: ${({ theme }) => theme.text};
 `;
 
 const Input = styled.input`
-  width: 94%;
-  padding: 0.8rem;
-  margin-bottom: 1rem;
-  border: 2px solid transparent;
-  border-radius: 8px;
-  background-color: ${({ theme }) => theme.card};
-  color: ${({ theme }) => theme.text};
-  ${({ disabled }) => disabled && `
-    pointer-events: none;
-    opacity: 0.6;
-  `}
-`;
-
-const Select = styled.select`
   width: 100%;
   padding: 0.8rem;
   margin-bottom: 1rem;
   border: 2px solid transparent;
   border-radius: 8px;
-  background-color: ${({ theme }) => theme.card};
+  background-color: ${({ theme }) => theme.body};
   color: ${({ theme }) => theme.text};
-`;
-
-const CheckboxContainer = styled.label`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
 `;
 
 const SubmitButton = styled.button`
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  font-weight: 600;
+  width: 100%;
+  padding: 0.8rem;
   border: none;
   border-radius: 8px;
-  cursor: pointer;
-  background-color: ${({ theme }) => theme.accent};
+  background-color: ${({ theme }) => theme.primary};
   color: white;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
   &:hover {
-    background-color: ${({ theme }) => theme.accenthover};
-    transform: translateY(-2px);
+    background-color: ${({ theme }) => theme.primaryhover};
   }
 `;
 
-const Weekday = styled.div`
-  text-align: center;
-  font-weight: bold;
-  color: ${({ theme }) => theme.text};
-  background-color: ${({ theme }) => theme.calendarDisabled};
-  padding: 0.5rem;
-  text-align: center;
-  border-radius: 4px;
-`;
-
-const Weekdaygrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 0.5rem;
-  border-radius: 8px;
-  margin-bottom: 0.5rem;
-`;
-
-const LegendContainer = styled.div`
-  margin-top: 1rem;
-  padding: 1rem;
-  background-color: ${({ theme }) => theme.card};
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-`;
-
-const LegendItem = styled.div`
+const AddPersonButton = styled.button`
   display: flex;
   align-items: center;
-  margin-bottom: 0.5rem;
-`;
-
-const LegendColor = styled.div`
-  width: 20px;
-  height: 20px;
-  border-radius: 4px;
-  margin-right: 0.5rem;
-  background-color: ${({ theme, status }) => {
-    switch (status) {
-      case 'free': return theme.calendarFree;
-      case 'some': return theme.calendarSome;
-      case 'almost': return theme.calendarAlmost;
-      case 'full': return theme.calendarFull;
-      case 'selected': return theme.calendarSelected;
-      default: return theme.calendarDisabled;
-    }
-  }};
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: ${({ theme }) => theme.accent};
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  
+  &:hover {
+    background-color: ${({ theme }) => theme.accenthover};
+  }
 `;
 
 export default function BookingForm() {
@@ -198,311 +175,253 @@ export default function BookingForm() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [availableSlots, setAvailableSlots] = useState([]);
-  const [appointments, setAppointments] = useState([]);
   const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    participants: 1,
+    customerName: '',
+    customerEmail: '',
     isGroup: false,
-    serviceId: '',
+    persons: [{ name: '', serviceId: '' }],
   });
   const [services, setServices] = useState([]);
-  const theme = useTheme(); // Holen des aktuellen Themes
+  const theme = useTheme();
 
-  // Aktuelles Datum und Zeit (06:46 PM CEST, 26. Juni 2025)
-  const today = new Date('2025-06-26T18:46:00+02:00');
+  // Aktuelles Datum und Zeit (12:49 PM CEST, 29. Juni 2025)
+  const today = new Date('2025-06-29T12:49:00+02:00');
 
-  // Fetch appointments
   useEffect(() => {
-    axios.get('/api/appointments')
-      .then(res => setAppointments(res.data))
-      .catch(err => console.error(err));
-  }, []);
+    const fetchAvailableSlots = async () => {
+      if (selectedDate) {
+        const dateString = selectedDate.toISOString().split('T')[0];
+        try {
+          const response = await axios.get(`http://localhost:8080/api/appointments/available/${dateString}`);
+          setAvailableSlots(response.data);
+        } catch (error) {
+          console.error('Error fetching available slots:', error);
+          setAvailableSlots([]); // Fallback
+        }
+      }
+    };
 
-  // Fetch available time slots when a date is selected
-  useEffect(() => {
-    if (selectedDate) {
-      const dateString = selectedDate.toISOString().split('T')[0];
-      axios.get(`/api/appointments/available/${dateString}`)
-        .then(res => setAvailableSlots(res.data))
-        .catch(err => console.error(err));
-    } else {
-      setAvailableSlots([]);
-    }
+    fetchAvailableSlots();
   }, [selectedDate]);
 
-  // Fetch services from database
   useEffect(() => {
-    axios.get('/api/services')
-      .then(res => setServices(res.data))
-      .catch(err => console.error(err));
+    const fetchServices = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/services');
+        setServices(response.data);
+      } catch (error) {
+        console.error('Error fetching services:', error);
+      }
+    };
+
+    fetchServices();
   }, []);
 
-  // Generate days for the current month, excluding Sa and So
-  const getMonthDays = () => {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const days = [];
+  const getMonthDays = (date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDayOfMonth = new Date(year, month, 1);
+    const lastDayOfMonth = new Date(year, month + 1, 0);
 
-    // Starte mit dem ersten Montag
-    let startDay = new Date(firstDay);
-    while (startDay.getDay() !== 1) { // 1 = Montag
-      startDay.setDate(startDay.getDate() + 1);
-    }
+    const daysInMonth = lastDayOfMonth.getDate();
+    const firstDayOfWeek = firstDayOfMonth.getDay();
 
-    // Füge Tage hinzu, nur Mo–Fr
-    for (let day = startDay.getDate(); day <= lastDay.getDate(); day++) {
-      const currentDate = new Date(year, month, day);
-      if (currentDate.getDay() >= 1 && currentDate.getDay() <= 5) { // Nur Mo–Fr (1–5)
-        days.push(currentDate);
-      }
-    }
+    let days = [];
 
-    // Füge leere Tage für das Ende des Monats hinzu, um 5 Spalten pro Woche zu füllen
-    while (days.length % 5 !== 0) {
+    for (let i = 0; i < firstDayOfWeek; i++) {
       days.push(null);
+    }
+
+    for (let i = 1; i <= daysInMonth; i++) {
+      days.push(new Date(year, month, i));
     }
 
     return days;
   };
 
-  // Navigate to previous month
   const prevMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
-    setSelectedDate(null);
-    setSelectedTime(null);
   };
 
-  // Navigate to next month
   const nextMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+  };
+
+  const getDayStatus = (day) => {
+    if (!day) return '';
+
+    const isToday = day.toDateString() === today.toDateString();
+    if (isToday) return 'today';
+
+    const isSelected = selectedDate && day.toDateString() === selectedDate.toDateString();
+    if (isSelected) return 'selected';
+
+    if (day < today) return 'booked';
+
+    const dateString = day.toDateString();
+    const selectedDateString = selectedDate?.toDateString();
+    if (selectedDateString === dateString && availableSlots.length === 0) return 'booked';
+    return 'available';
+  };
+
+  const handlePersonUpdate = (index, field, value) => {
+    const updatedPersons = [...formData.persons];
+    updatedPersons[index][field] = value;
+    setFormData({ ...formData, persons: updatedPersons });
+  };
+
+  const addPerson = () => {
+    setFormData({
+      ...formData,
+      persons: [...formData.persons, { name: '', serviceId: '' }]
+    });
+  };
+
+  const removePerson = (index) => {
+    if (formData.persons.length > 1) {
+      const updatedPersons = formData.persons.filter((_, i) => i !== index);
+      setFormData({ ...formData, persons: updatedPersons });
+    }
+  };
+
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!selectedDate || !selectedTime || !formData.customerName || !formData.customerEmail) {
+    alert('Bitte füllen Sie alle Pflichtfelder aus.');
+    return;
+  }
+
+  const invalidPerson = formData.persons.find(person => !person.name || !person.serviceId);
+  if (invalidPerson) {
+    alert('Bitte füllen Sie Name und Service für alle Personen aus.');
+    return;
+  }
+
+  try {
+    const dateString = selectedDate.toLocaleDateString('en-CA'); // Sicherstellen, dass YYYY-MM-DD
+    const token = localStorage.getItem('token');
+    let userId = null;
+    if (token) {
+      userId = null; // Ersetze mit gültiger ObjectId-Logik
+    }
+
+    const bookingData = {
+      customerName: formData.customerName,
+      customerEmail: formData.customerEmail,
+      date: dateString,
+      time: selectedTime,
+      isGroup: formData.isGroup,
+      persons: formData.persons,
+      userId: userId
+    };
+    console.log('Sending booking data:', bookingData);
+
+    await axios.post('http://localhost:8080/api/appointments', bookingData, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    });
+
+    alert('Buchung erfolgreich!');
+    setFormData({
+      customerName: '',
+      customerEmail: '',
+      isGroup: false,
+      persons: [{ name: '', serviceId: '' }]
+    });
     setSelectedDate(null);
     setSelectedTime(null);
-  };
+    setAvailableSlots([]);
+  } catch (err) {
+    console.error('Buchung Fehler:', err.response ? err.response.data : err);
+    alert('Buchung fehlgeschlagen: ' + (err.response?.data?.error || err.message));
+  }
+};
 
-  // Determine day status based on bookings and past dates
-  const getDayStatus = (date) => {
-    if (!date) return 'disabled';
-    const dateString = date.toISOString().split('T')[0];
-    const dayAppointments = appointments.filter(appt => appt.date === dateString);
-    const totalSlots = 6; // 18:00–20:30 = 6 Slots
-    const bookedSlots = dayAppointments.length;
-
-    // Prüfe, ob der Tag in der Vergangenheit liegt
-    if (date < today) return 'disabled';
-
-    if (bookedSlots < 3) return 'free';
-    if (bookedSlots < 4) return 'some';
-    if (bookedSlots < 6) return 'almost';
-    return 'full';
-  };
-
-  // Handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!selectedDate || !selectedTime || !formData.fullName || !formData.email || !formData.serviceId) {
-      alert('Bitte füllen Sie alle Pflichtfelder aus.');
-      return;
-    }
-
-    try {
-      const dateString = selectedDate.toISOString().split('T')[0];
-      const token = localStorage.getItem('token'); // Token aus localStorage
-      const appointmentsToSave = [];
-      const participants = formData.isGroup ? formData.participants : 1;
-
-      if (formData.isGroup && participants > 1) {
-        const timeSlots = ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30'];
-        const startIndex = timeSlots.indexOf(selectedTime);
-        if (startIndex === -1) {
-          alert('Ungültige Startzeit.');
-          return;
-        }
-
-        // Prüfen, ob genügend aufeinanderfolgende Slots verfügbar sind
-        for (let i = 0; i < participants; i++) {
-          const slotTime = timeSlots[startIndex + i];
-          if (!slotTime || !availableSlots.includes(slotTime)) {
-            alert('Nicht genügend aufeinanderfolgende Zeitfenster verfügbar. Bitte mindere die Anzahl Kunden.');
-            return;
-          }
-        }
-
-        // Gruppenbuchungen erstellen
-        for (let i = 0; i < participants; i++) {
-          const slotTime = timeSlots[startIndex + i];
-          appointmentsToSave.push({
-            userId: 'sample-user-id', // Platzhalter, ersetze mit realer User-ID
-            date: dateString,
-            time: slotTime,
-            participants: 1,
-            isGroup: true,
-            service: {
-              id: formData.serviceId,
-              name: services.find(s => s._id === formData.serviceId)?.name || 'Unbekannter Service',
-              price: services.find(s => s._id === formData.serviceId)?.price || 50
-            }
-          });
-        }
-      } else {
-        if (!availableSlots.includes(selectedTime)) {
-          alert('Gewählte Zeit ist bereits gebucht.');
-          return;
-        }
-        appointmentsToSave.push({
-          userId: 'sample-user-id', // Platzhalter, ersetze mit realer User-ID
-          date: dateString,
-          time: selectedTime,
-          participants,
-          isGroup: false,
-          service: {
-            id: formData.serviceId,
-            name: services.find(s => s._id === formData.serviceId)?.name || 'Unbekannter Service',
-            price: services.find(s => s._id === formData.serviceId)?.price || 50
-          }
-        });
-      }
-
-      for (const appt of appointmentsToSave) {
-        await axios.post('/api/appointments', appt, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-      }
-      alert('Buchung erfolgreich!');
-      setFormData({ fullName: '', email: '', participants: 1, isGroup: false, serviceId: '' });
-      setSelectedDate(null);
-      setSelectedTime(null);
-      setAvailableSlots([]);
-    } catch (err) {
-      console.error(err);
-      alert('Buchung fehlgeschlagen: ' + err.message);
-    }
-  };
-
-  // Format selected date for display
   const formatSelectedDate = (date) => {
-    if (!date) return '';
-    return date.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    if (!date) return 'Kein Datum ausgewählt';
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return date.toLocaleDateString('de-DE', options);
   };
 
   return (
     <BookingContainer>
       <CalendarSection>
-        <CalendarHeader>
-          <CalendarNavButton onClick={prevMonth}><FaArrowLeft /></CalendarNavButton>
-          <CalendarMonth>{currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}</CalendarMonth>
-          <CalendarNavButton onClick={nextMonth}><FaArrowRight /></CalendarNavButton>
-        </CalendarHeader>
-        
-        <Weekdaygrid>
-          {['Mo', 'Di', 'Mi', 'Do', 'Fr'].map(day => (
-            <Weekday key={day}>{day}</Weekday>
-          ))}
-        </Weekdaygrid>
-        <br />
-        <CalendarGrid>
-          {getMonthDays().map((day, index) => (
-            <Day
-              key={index}
-              status={day ? getDayStatus(day) : 'disabled'}
-              disabled={!day || (day && day < today)}
-              selected={day && selectedDate && day.toDateString() === selectedDate.toDateString()}
-              onClick={() => day && day >= today && setSelectedDate(day)}
-            >
-              {day ? day.getDate() : ''}
-            </Day>
-          ))}
-        </CalendarGrid>
-        <div>
-          <h3>Uhrzeit auswählen</h3>
-          {['18:00', '18:30', '19:00', '19:30', '20:00', '20:30'].map((time, index) => (
-            <TimeSlot
-              key={index}
-              disabled={!selectedDate || !availableSlots.includes(time)}
-              selected={selectedTime === time}
-              onClick={() => availableSlots.includes(time) && setSelectedTime(time)}
-            >
-              {time}
-            </TimeSlot>
-          ))}
-        </div>
-        <LegendContainer>
-          <h4>Legende</h4>
-          <LegendItem>
-            <LegendColor theme={theme} status="free" />
-            <span>Frei</span>
-          </LegendItem>
-          <LegendItem>
-            <LegendColor theme={theme} status="some" />
-            <span>Einige Buchungen</span>
-          </LegendItem>
-          <LegendItem>
-            <LegendColor theme={theme} status="almost" />
-            <span>Fast ausgebucht</span>
-          </LegendItem>
-          <LegendItem>
-            <LegendColor theme={theme} status="full" />
-            <span>Ausgebucht</span>
-          </LegendItem>
-          <LegendItem>
-            <LegendColor theme={theme} status="selected" />
-            <span>Ausgewählt</span>
-          </LegendItem>
-        </LegendContainer>
+        <CalendarContainer>
+          <CalendarHeader>
+            <ArrowButton onClick={prevMonth}><FaArrowLeft /></ArrowButton>
+            <MonthName>{currentDate.toLocaleString('de-DE', { month: 'long', year: 'numeric' })}</MonthName>
+            <ArrowButton onClick={nextMonth}><FaArrowRight /></ArrowButton>
+          </CalendarHeader>
+          <DaysGrid>
+            {['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'].map(day => (
+              <div key={day} style={{ textAlign: 'center', padding: '0.5rem', color: theme.text }}>{day}</div>
+            ))}
+            {getMonthDays(currentDate).map((day, index) => (
+              <Day
+                key={index}
+                className={getDayStatus(day)}
+                onClick={() => {
+                  if (day && day >= today) {
+                    setSelectedDate(day);
+                  }
+                }}
+              >
+                {day ? day.getDate() : ''}
+              </Day>
+            ))}
+          </DaysGrid>
+        </CalendarContainer>
+        {selectedDate && (
+          <TimeSlots>
+            {availableSlots.map(slot => (
+              <TimeSlotButton
+                key={slot}
+                $isSelected={selectedTime === slot}
+                onClick={() => setSelectedTime(slot)}
+              >
+                {slot}
+              </TimeSlotButton>
+            ))}
+          </TimeSlots>
+        )}
       </CalendarSection>
       <FormSection>
         <h2>Buchungsformular</h2>
         <form onSubmit={handleSubmit}>
           <Input
             type="text"
-            placeholder="Namen"
-            value={formData.fullName}
-            onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+            placeholder="Name"
+            value={formData.customerName}
+            onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
             required
           />
           <Input
             type="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            placeholder="Ihre E-Mail"
+            value={formData.customerEmail}
+            onChange={(e) => setFormData({ ...formData, customerEmail: e.target.value })}
             required
           />
-          <CheckboxContainer>
-            <input
-              type="checkbox"
-              checked={formData.isGroup}
-              onChange={(e) => {
-                const isGroup = e.target.checked;
-                setFormData({ ...formData, isGroup, participants: isGroup ? formData.participants : 1 });
-              }}
+          <Switch
+            checked={formData.isGroup}
+            onChange={(e) => setFormData({ ...formData, isGroup: e.target.checked })}
+            label="Gruppentermin"
+          />
+          {formData.persons.map((person, index) => (
+            <PersonForm
+              key={index}
+              person={person}
+              index={index}
+              services={services}
+              onUpdate={handlePersonUpdate}
+              onRemove={removePerson}
+              canRemove={formData.persons.length > 1}
             />
-            Gruppentermin
-          </CheckboxContainer>
-          <Input
-            type="number"
-            placeholder="Anzahl Kunden"
-            value={formData.participants}
-            onChange={(e) => formData.isGroup && setFormData({ ...formData, participants: parseInt(e.target.value) || 1 })}
-            min="1"
-            disabled={!formData.isGroup}
-            required
-          />
-          <Select
-            value={formData.serviceId}
-            onChange={(e) => setFormData({ ...formData, serviceId: e.target.value })}
-            required
-          >
-            <option value="">Wählen</option>
-            {services.map(service => (
-              <option key={service._id} value={service._id}>
-                {service.name} - {service.price} .-
-              </option>
-            ))}
-          </Select>
+          ))}
+          <AddPersonButton type="button" onClick={addPerson}>
+            <FaPlus /> Person hinzufügen
+          </AddPersonButton>
           <SelectedDate>Datum: {formatSelectedDate(selectedDate)}</SelectedDate>
-          <SubmitButton type="submit">Book Appointment</SubmitButton>
+          <SubmitButton type="submit">Termin buchen</SubmitButton>
         </form>
       </FormSection>
     </BookingContainer>

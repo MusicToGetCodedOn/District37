@@ -1,7 +1,16 @@
 import mongoose from 'mongoose';
 
+const personSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  serviceId: { type: mongoose.Schema.Types.ObjectId, ref: 'Service', required: true },
+  serviceName: { type: String, required: true },
+  servicePrice: { type: Number, required: true }
+});
+
 const appointmentSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
+  customerName: { type: String, required: true },
+  customerEmail: { type: String, required: true },
   date: { 
     type: String, 
     required: true,
@@ -18,26 +27,17 @@ const appointmentSchema = new mongoose.Schema({
     enum: ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30'],
     message: props => `${props.value} ist keine gültige Uhrzeit!`
   },
-  participants: { type: Number, default: 1, min: 1 },
   isGroup: { type: Boolean, default: false },
-  service: {
-    id: { type: mongoose.Schema.Types.ObjectId, ref: 'Service', required: true },
-    name: { type: String, required: true },
-    price: { type: Number, required: true }
-  },
-  expireAt: { type: Date, index: { expires: '0s' } } 
+  persons: [personSchema],
+  expireAt: { type: Date, index: { expires: '0s' } }
 },
 {
   timestamps: true
 });
 
-// Pre-Save-Hook, um expireAt zu berechnen
 appointmentSchema.pre('save', function(next) {
-  if (this.isModified('date') || this.isNew) {
-    const date = new Date(this.date);
-    date.setDate(date.getDate() + 30); 
-    this.expireAt = date;
-  }
+  this.expireAt = new Date(this.date);
+  this.expireAt.setMonth(this.expireAt.getMonth() + 1); // Einen Monat hinzufügen
   next();
 });
 

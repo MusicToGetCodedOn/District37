@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import ExportCsvButton from './ExportCsvButton';
+import styled, { useTheme } from 'styled-components';
 import axios from 'axios';
+import dayjs from 'dayjs';
 import {
   LineChart,
   Line,
@@ -10,10 +12,18 @@ import {
   CartesianGrid,
   ResponsiveContainer
 } from 'recharts';
-import dayjs from 'dayjs';
+
+
+
+const ChartGrid = styled(CartesianGrid)`
+  stroke: ${({ theme }) => theme.text};
+`;
+
+
 
 const RevenueChart = () => {
   const [data, setData] = useState([]);
+  const theme = useTheme();
 
   useEffect(() => {
     const fetchRevenue = async () => {
@@ -66,11 +76,16 @@ const RevenueChart = () => {
       <h3>Einnahmen der letzten 30 Tage</h3>
       <ResponsiveContainer>
         <LineChart data={data}>
-          <CartesianGrid stroke="#ccc" />
+          <ChartGrid />
           <XAxis dataKey="date" />
           <YAxis />
           <Tooltip />
-          <Line type="monotone" dataKey="revenue" stroke="#4cafef" strokeWidth={2} />
+          <Line
+            type="monotone"
+            dataKey="revenue"
+            stroke={theme.accent}
+            strokeWidth={2}
+          />
         </LineChart>
       </ResponsiveContainer>
       <ExportCsvButton data={data} />

@@ -73,11 +73,6 @@ const Input = styled.input`
   margin-bottom: 1rem;
 `;
 
-const Textarea = styled.textarea`
-  width: 100%;
-  padding: 0.8rem;
-  margin-bottom: 1rem;
-`;
 
 const Button = styled.button`
   padding: 0.6rem 1.2rem;
@@ -436,16 +431,6 @@ export default function BookingForm() {
               canRemove={formData.persons.length > 1}
             />
           ))}
-<<<<<<< Updated upstream
-          <AddPersonButton type="button" onClick={addPerson}>
-            <FaPlus /> Person hinzufügen
-          </AddPersonButton>
-          <SelectedDate>Datum: {formatSelectedDate(selectedDate)}</SelectedDate>
-          <SubmitButton type="submit">Termin buchen</SubmitButton>
-        </form>
-      </FormSection>
-    </BookingContainer>
-=======
 
           {formData.isGroup && (
             <Button type="button" onClick={() => {
@@ -587,6 +572,5 @@ export default function BookingForm() {
 
 
     </div>
->>>>>>> Stashed changes
   );
 }

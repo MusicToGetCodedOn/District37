@@ -417,6 +417,7 @@ export default function BookingForm() {
               canRemove={formData.persons.length > 1}
             />
           ))}
+<<<<<<< Updated upstream
           <AddPersonButton type="button" onClick={addPerson}>
             <FaPlus /> Person hinzufügen
           </AddPersonButton>
@@ -425,5 +426,148 @@ export default function BookingForm() {
         </form>
       </FormSection>
     </BookingContainer>
+=======
+
+          {formData.isGroup && (
+            <Button type="button" onClick={() => {
+              setFormData({ ...formData, persons: [...formData.persons, { name: '', serviceId: '', notes: '' }] });
+            }}>
+              <FaPlus /> Person hinzufügen
+            </Button>
+          )}
+
+          
+
+          <div>
+            <Button type="button" onClick={() => setStep(1)}><FaArrowLeft /> Zurück</Button>
+            <Button type="button" onClick={() => setStep(3)} disabled={false}>Weiter <FaArrowRight /></Button>
+          </div>
+        </form>
+      )}
+
+      {/* Schritt 3: Zeit auswählen */}
+      {step === 3 && (
+        <StepContainer>
+          <h2>Wähle eine Uhrzeit</h2>
+
+          {loadingSlots ? (
+            <p>Lade verfügbare Slots...</p>
+          ) : (
+            <SlotGrid>
+              {slots.map((slot, idx) => {
+                const personCount = formData.isGroup ? formData.persons.length : 1;
+                const sequence = slots.slice(idx, idx + personCount);
+
+                // Prüfen, ob für Gruppentermine alle benötigten Slots verfügbar sind
+                const isAvailable = sequence.length === personCount && sequence.every(s => s.availableSpots > 0);
+
+                const isSelected = selectedSlots.length > 0
+                  ? selectedSlots.includes(slot.time)
+                  : selectedTime && !Array.isArray(selectedTime) && selectedTime.time === slot.time;
+
+                return (
+
+
+                  console.log(selectedDate.toISOString().split('T')[0]),
+
+
+                  <SlotButton
+                    key={slot.time}
+                    selected={isSelected}
+                    disabled={!isAvailable}
+                    onClick={() => {
+                      if (!isAvailable) return;
+
+                      if (formData.isGroup) {
+                        const newSelected = sequence.map(s => s.time);
+                        setSelectedSlots(newSelected);
+                        setSelectedTime(sequence);
+                      } else {
+                        setSelectedSlots([slot.time]);
+                        setSelectedTime(slot);
+                      }
+                    }}
+                  >
+                    {slot.time}
+                  </SlotButton>
+                );
+              })}
+            </SlotGrid>
+          )}
+
+          <NavButtons>
+            <Button type="button" onClick={() => setStep(2)}><FaArrowLeft /> Zurück</Button>
+            <Button type="button" onClick={() => setStep(4)} disabled={!selectedTime}><FaArrowRight /> Weiter</Button>
+          </NavButtons>
+        </StepContainer>
+      )}
+
+      {step === 4 && (
+        <>
+          <h3>Buchungsübersicht</h3>
+
+          {/* Basisdaten der Buchung */}
+          <p><strong>Name:</strong> {formData.customerName}</p>
+          <p><strong>E-Mail:</strong> {formData.customerEmail}</p>
+          <p><strong>Datum:</strong> {selectedDate?.toLocaleDateString('de-DE')}</p>
+          <p>
+            <strong>Uhrzeit:</strong>{' '}
+            {Array.isArray(selectedTime)
+              ? `${selectedTime[0].time} – ${selectedTime[selectedTime.length - 1].time}`
+              : selectedTime?.time}
+          </p>
+
+          {/* Unterscheidung zwischen Einzel- und Gruppenbuchung */}
+          {formData.isGroup ? (
+            <>
+              <p><strong>Teilnehmer & Leistungen:</strong></p>
+              <ul>
+                {formData.persons.map((p, i) => {
+                  const service = services.find(s => s._id === p.serviceId);
+                  const serviceName = service?.name || 'Unbekannt';
+                  const servicePrice = service?.price?.toFixed(2) || '?';
+                  return (
+                    <li key={i}>
+                      {p.name} – {serviceName} ({servicePrice} CHF)
+                    </li>
+                  );
+                })}
+              </ul>
+
+              {/* Gesamtpreis aller Personen */}
+              <p>
+                <strong>Total:</strong>{' '}
+                {formData.persons.reduce((sum, p) => {
+                  const service = services.find(s => s._id === p.serviceId);
+                  return sum + (service?.price || 0);
+                }, 0).toFixed(2)} CHF
+              </p>
+            </>
+          ) : (
+            <>
+              {/* Einzelbuchung: Leistung + Preis */}
+              <p>
+                <strong>Leistung:</strong>{' '}
+                {services.find(s => s._id === formData.persons[0].serviceId)?.name || 'Unbekannt'} (
+                {services.find(s => s._id === formData.persons[0].serviceId)?.price.toFixed(2) || '?'} CHF)
+              </p>
+            </>
+          )}
+
+          
+
+          {/* Navigation */}
+          <div>
+            <Button type="button" onClick={() => setStep(3)}>
+              <FaArrowLeft /> Zurück
+            </Button>
+            <Button type="submit" onClick={handleSubmit}>Termin buchen</Button>
+          </div>
+        </>
+      )}
+
+
+    </div>
+>>>>>>> Stashed changes
   );
 }

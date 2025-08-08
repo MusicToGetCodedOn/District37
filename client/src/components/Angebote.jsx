@@ -22,11 +22,11 @@ export default function Angebote() {
     fetchServices();
   }, []);
   const isNewService = (createdAt) => {
-  const createdDate = new Date(createdAt);
-  const now = new Date();
-  const diffInDays = (now - createdDate) / (1000 * 60 * 60 * 24);
-  return diffInDays < 7;
-};
+    const createdDate = new Date(createdAt);
+    const now = new Date();
+    const diffInDays = (now - createdDate) / (1000 * 60 * 60 * 24);
+    return diffInDays < 7;
+  };
 
   return (
     <>
@@ -36,27 +36,27 @@ export default function Angebote() {
           {loading
             ? Array.from({ length: 3 }).map((_, i) => <div className="skeletonservice" key={i}><h3></h3><p></p><p></p></div>)
             : services.map((service, i) => (
-                <div className='servicecard' key={service._id || i}>
-                  <h3>
-                    {service.name}
-                    {isNewService(service.createdAt) && (
-                      <span style={{
-                        backgroundColor: '#ff4d4f',
-                        color: 'white',
-                        fontSize: '0.7rem',
-                        padding: '2px 6px',
-                        marginLeft: '8px',
-                        borderRadius: '4px',
-                        verticalAlign: 'middle',
-                      }}>
-                        Neu
-                      </span>
-                    )}
-                  </h3>
-                  <p>{service.desc}</p>
-                  <p><strong>{service.price} .-</strong></p>
-                </div>
-              ))
+              <div className='servicecard' key={service._id || i}>
+                <h3>
+                  {service.name}
+                  {isNewService(service.createdAt) && (
+                    <span style={{
+                      backgroundColor: '#ff4d4f',
+                      color: 'white',
+                      fontSize: '0.7rem',
+                      padding: '2px 6px',
+                      marginLeft: '8px',
+                      borderRadius: '4px',
+                      verticalAlign: 'middle',
+                    }}>
+                      Neu
+                    </span>
+                  )}
+                </h3>
+                <p>{service.desc}</p>
+                <p><strong>{service.price} .-</strong></p>
+              </div>
+            ))
           }
         </div>
         <br />

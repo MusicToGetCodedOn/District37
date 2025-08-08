@@ -5,13 +5,13 @@ import ImageSlider from "../components/ImageSlider";
 import LocationSection from "../components/LocationSection";
 import Styles from "../routes/HomeRoute.module.css"
 
-    
+
 
 
 
 export default function HomeRoute() {
-   
-    return(
+
+    return (
         <>
             <GlobalStyle />
             <main>
@@ -24,9 +24,9 @@ export default function HomeRoute() {
                 </div>
                 <div className={Styles.container2}>
                     <Angebote />
-                    <LocationSection/>
+                    <LocationSection />
                 </div>
-        
+
             </main>
         </>
     )

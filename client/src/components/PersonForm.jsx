@@ -1,71 +1,51 @@
-
+// components/PersonForm.jsx
 import React from 'react';
 import styled from 'styled-components';
+import { FaTrash } from 'react-icons/fa';
 
-const PersonContainer = styled.div`
-  border: 1px solid ${({ theme }) => theme.accent};
-  border-radius: 8px;
+const Wrapper = styled.div`
+  margin-bottom: 1rem;
   padding: 1rem;
-  margin-bottom: 1rem;
-  background-color: ${({ theme }) => theme.card};
-`;
-
-const PersonHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-`;
-
-const PersonTitle = styled.h4`
-  margin: 0;
-  color: ${({ theme }) => theme.text};
-`;
-
-const RemoveButton = styled.button`
-  background: none;
-  border: none;
-  color: #ff4444;
-  cursor: pointer;
-  font-size: 1.2rem;
-  padding: 0.2rem;
-  
-  &:hover {
-    color: #cc0000;
-  }
+  border: 1px solid ${({ theme }) => theme.surface};
+  border-radius: 6px;
+  background-color: ${({ theme }) => theme.body};
 `;
 
 const Input = styled.input`
-  width: 94%;
-  padding: 0.8rem;
-  margin-bottom: 1rem;
-  border: 2px solid transparent;
-  border-radius: 8px;
-  background-color: ${({ theme }) => theme.body};
-  color: ${({ theme }) => theme.text};
+  width: 100%;
+  padding: 0.6rem;
+  margin-bottom: 0.5rem;
 `;
 
 const Select = styled.select`
   width: 100%;
-  padding: 0.8rem;
-  margin-bottom: 1rem;
-  border: 2px solid transparent;
-  border-radius: 8px;
-  background-color: ${({ theme }) => theme.body};
-  color: ${({ theme }) => theme.text};
+  padding: 0.6rem;
+  margin-bottom: 0.5rem;
 `;
 
-export default function PersonForm({ person, index, services, onUpdate, onRemove, canRemove }) {
+const Textarea = styled.textarea`
+  width: 100%;
+  padding: 0.6rem;
+  margin-bottom: 0.5rem;
+`;
+
+const RemoveButton = styled.button`
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+`;
+
+export default function PersonForm({ index, person, services, onUpdate, onRemove, canRemove }) {
   return (
-    <PersonContainer>
-      <PersonHeader>
-        <PersonTitle>Person {index + 1}</PersonTitle>
-        {canRemove && (
-          <RemoveButton onClick={() => onRemove(index)}>
-            ×
-          </RemoveButton>
-        )}
-      </PersonHeader>
+    <Wrapper>
+      <h4>Person {index + 1}</h4>
       <Input
         type="text"
         placeholder="Name"
@@ -81,10 +61,20 @@ export default function PersonForm({ person, index, services, onUpdate, onRemove
         <option value="">Service wählen</option>
         {services.map(service => (
           <option key={service._id} value={service._id}>
-            {service.name} - {service.price} .-
+            {service.name} – {service.price}€
           </option>
         ))}
       </Select>
-    </PersonContainer>
+      <Textarea
+        placeholder="Notizen (optional)"
+        value={person.notes}
+        onChange={(e) => onUpdate(index, 'notes', e.target.value)}
+      />
+      {canRemove && (
+        <RemoveButton type="button" onClick={() => onRemove(index)}>
+          <FaTrash /> Entfernen
+        </RemoveButton>
+      )}
+    </Wrapper>
   );
 }

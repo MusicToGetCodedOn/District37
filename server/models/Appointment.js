@@ -4,7 +4,8 @@ const personSchema = new mongoose.Schema({
   name: { type: String, required: true },
   serviceId: { type: mongoose.Schema.Types.ObjectId, ref: 'Service', required: true },
   serviceName: { type: String, required: true },
-  servicePrice: { type: Number, required: true }
+  servicePrice: { type: Number, required: true },
+  notes: { type: String, required: false },  // NEW: notes field optional
 });
 
 const appointmentSchema = new mongoose.Schema({
@@ -29,11 +30,16 @@ const appointmentSchema = new mongoose.Schema({
   },
   isGroup: { type: Boolean, default: false },
   persons: [personSchema],
+  numberOfPersons: { type: Number, required: true, min: 1 },  // NEU
   expireAt: { type: Date, index: { expires: '0s' } }
 },
 {
   timestamps: true
 });
+
+{
+  timestamps: true
+};
 
 appointmentSchema.pre('save', function(next) {
   this.expireAt = new Date(this.date);

@@ -24,8 +24,8 @@ const ServiceList = ({ onEdit, onCreate }) => {
 
   const filtered = Array.isArray(services)
     ? services.filter(service =>
-        service.name.toLowerCase().includes(search.toLowerCase())
-      )
+      service.name.toLowerCase().includes(search.toLowerCase())
+    )
     : [];
 
   return (
@@ -61,20 +61,20 @@ const ServiceList = ({ onEdit, onCreate }) => {
               <td>{service.desc}</td>
               <td>{service.price} .-</td>
               <td>{new Date(service.createdAt).toLocaleString('de-DE', {
-                  day: '2-digit',
-                  month: '2-digit',
-                  year: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
               </td>
               <td>{new Date(service.updatedAt).toLocaleString('de-DE', {
-                  day: '2-digit',
-                  month: '2-digit',
-                  year: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
               </td>
               <td className="action-buttons">
                 <button

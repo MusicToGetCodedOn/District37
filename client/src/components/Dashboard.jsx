@@ -36,7 +36,7 @@ const Dashboard = () => {
       ) : (
         <>
           <ServiceList
-            key={reloadFlag} 
+            key={reloadFlag}
             onEdit={handleEdit}
             onCreate={handleCreate}
           />

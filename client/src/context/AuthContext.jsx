@@ -8,7 +8,7 @@ export function AuthProvider({ children }) {
   const [isAuthReady, setIsAuthReady] = useState(false);
 
   useEffect(() => {
-    
+
     const token = localStorage.getItem('token');
     const storedRole = localStorage.getItem('role');
 

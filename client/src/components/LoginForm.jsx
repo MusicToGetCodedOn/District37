@@ -2,7 +2,7 @@ import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled, { useTheme } from 'styled-components';
 import { AuthContext } from '../context/AuthContext';
-import { FaEye, FaEyeSlash } from 'react-icons/fa'; 
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 
 
@@ -124,7 +124,7 @@ const LoginForm = () => {
   const theme = useTheme();
   const [showPassword, setShowPassword] = useState(false);
 
-  
+
   const { login } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
@@ -146,10 +146,10 @@ const LoginForm = () => {
 
 
       const token = data.token;
-     const role = data.user?.role || '';
-localStorage.setItem('token', data.token);
-localStorage.setItem('role', role);
-login(data.token, role);
+      const role = data.user?.role || '';
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('role', role);
+      login(data.token, role);
 
       login(token, role);
 
@@ -180,24 +180,24 @@ login(data.token, role);
         />
 
         <PasswordInputWrapper>
-  <PasswordInput
-    type={showPassword ? 'text' : 'password'}
-    placeholder="Passwort"
-    value={password}
-    onChange={(e) => setPassword(e.target.value)}
-    required
-    id="pwd"
-  />
-  <TogglePasswordButton
-    type="button"
-    onClick={() => setShowPassword((prev) => !prev)}
-    aria-label="Passwort anzeigen/verstecken"
-    className='togglepwd'
-  >
-    {showPassword ? <FaEyeSlash /> : <FaEye />}
-  </TogglePasswordButton>
-</PasswordInputWrapper>
-        
+          <PasswordInput
+            type={showPassword ? 'text' : 'password'}
+            placeholder="Passwort"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            id="pwd"
+          />
+          <TogglePasswordButton
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            aria-label="Passwort anzeigen/verstecken"
+            className='togglepwd'
+          >
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
+          </TogglePasswordButton>
+        </PasswordInputWrapper>
+
 
         <SubmitButton type="submit">Einloggen</SubmitButton>
 

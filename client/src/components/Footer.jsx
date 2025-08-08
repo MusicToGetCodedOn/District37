@@ -35,9 +35,9 @@ const ImpressumLink = styled.a`
   }
 `;
 
-const Footer = () =>{
-    return (
-         <FooterContainer>
+const Footer = () => {
+  return (
+    <FooterContainer>
       <SocialLinks>
         <SocialIcon href="https://twitter.com" target="_blank" rel="noopener noreferrer">
           <i className="fab fa-twitter"></i>
@@ -58,7 +58,7 @@ const Footer = () =>{
         <ImpressumLink href="/impressum">Impressum</ImpressumLink>
       </p>
     </FooterContainer>
-    );
+  );
 };
 
 export default Footer;

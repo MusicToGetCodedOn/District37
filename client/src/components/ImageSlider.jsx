@@ -19,20 +19,21 @@ export default function ImageSlider() {
     }, []);
 
     return (
-         <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait">
             <motion.img
-    key={currentIndex}
-    src={images[currentIndex]}
-    alt="Barber Shop"
-    initial={{ opacity: 0, x: 50 }}
-    animate={{ opacity: 1, x: 0 }}
-    exit={{ opacity: 0, x: -50 }}
-    transition={{ duration: 0.5 }}
-    style={{ 
-width: '300px', height: '400px', objectFit: 'cover' }}
-  />
+                key={currentIndex}
+                src={images[currentIndex]}
+                alt="Barber Shop"
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.5 }}
+                style={{
+                    width: '300px', height: '400px', objectFit: 'cover'
+                }}
+            />
         </AnimatePresence>
-            
+
     );
 }
 

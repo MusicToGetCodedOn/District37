@@ -96,12 +96,12 @@ const StyledButton = styled.button`
 
 export default function Header({ darkMode, setDarkMode }) {
   const theme = useTheme();
-  
+
   const navigate = useNavigate();
 
   const { isLoggedIn, role, logout, isAuthReady } = useContext(AuthContext);
 
-if (!isAuthReady) return null;
+  if (!isAuthReady) return null;
 
   const handleLogout = () => {
     logout();
@@ -128,9 +128,9 @@ if (!isAuthReady) return null;
             <StyledButton onClick={handleLogin}>Login</StyledButton>
           )}
 
-         {isLoggedIn && ['admin', 'superuser'].includes(role?.toLowerCase()) && (
-  <StyledLink to="/dashboard">Dashboard</StyledLink>
-)}
+          {isLoggedIn && ['admin', 'superuser'].includes(role?.toLowerCase()) && (
+            <StyledLink to="/dashboard">Dashboard</StyledLink>
+          )}
 
           <ToggleButton onClick={() => setDarkMode(!darkMode)}>
             {darkMode ? <Sun size={24} /> : <Moon size={24} />}

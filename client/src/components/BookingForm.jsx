@@ -436,6 +436,16 @@ export default function BookingForm() {
               canRemove={formData.persons.length > 1}
             />
           ))}
+<<<<<<< Updated upstream
+          <AddPersonButton type="button" onClick={addPerson}>
+            <FaPlus /> Person hinzufügen
+          </AddPersonButton>
+          <SelectedDate>Datum: {formatSelectedDate(selectedDate)}</SelectedDate>
+          <SubmitButton type="submit">Termin buchen</SubmitButton>
+        </form>
+      </FormSection>
+    </BookingContainer>
+=======
 
           {formData.isGroup && (
             <Button type="button" onClick={() => {
@@ -445,11 +455,7 @@ export default function BookingForm() {
             </Button>
           )}
 
-          <Textarea
-            placeholder="Notizen"
-            value={formData.notes}
-            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-          />
+          
 
           <div>
             <Button type="button" onClick={() => setStep(1)}><FaArrowLeft /> Zurück</Button>
@@ -567,22 +573,20 @@ export default function BookingForm() {
             </>
           )}
 
-          {/* Optionale Notizen anzeigen */}
-          {formData.notes && (
-            <p><strong>Notizen:</strong> {formData.notes}</p>
-          )}
+          
 
           {/* Navigation */}
           <div>
             <Button type="button" onClick={() => setStep(3)}>
               <FaArrowLeft /> Zurück
             </Button>
-            <Button type="submit">Termin buchen</Button>
+            <Button type="submit" onClick={handleSubmit}>Termin buchen</Button>
           </div>
         </>
       )}
 
 
     </div>
+>>>>>>> Stashed changes
   );
 }

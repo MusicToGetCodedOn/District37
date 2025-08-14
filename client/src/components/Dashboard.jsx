@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import ServiceList from './ServiceList';
 import ServiceForm from './ServiceForm';
 import AppointmentList from './AppointmentList';
-import RevenueChart from './Chart';  // Import
+import RevenueChart from './Chart'; 
+
 
 const Dashboard = () => {
   const [editingService, setEditingService] = useState(null);
@@ -43,7 +44,10 @@ const Dashboard = () => {
           />
           <h3 style={{ marginTop: '2rem' }}>Terminübersicht</h3>
           <AppointmentList />
-          <RevenueChart />
+          <div>
+            <RevenueChart />
+          </div>
+
         </>
       )}
     </div>

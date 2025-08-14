@@ -18,6 +18,12 @@ import {
 const ChartGrid = styled(CartesianGrid)`
   stroke: ${({ theme }) => theme.text};
 `;
+const ChartBackground = styled(ResponsiveContainer)`
+  background: ${({ theme }) => theme.card};
+  padding: 1rem;
+  margin-bottom: 1rem;
+  width: 50%;
+`;
 
 
 
@@ -74,7 +80,7 @@ const RevenueChart = () => {
   return (
     <div style={{ width: '100%', height: 400, marginTop: '2rem' }}>
       <h3>Einnahmen der letzten 30 Tage</h3>
-      <ResponsiveContainer>
+      <ChartBackground>
         <LineChart data={data}>
           <ChartGrid />
           <XAxis dataKey="date" />
@@ -87,9 +93,10 @@ const RevenueChart = () => {
             strokeWidth={2}
           />
         </LineChart>
-      </ResponsiveContainer>
-      <ExportCsvButton data={data} />
-
+      </ChartBackground>
+      <div>
+        <ExportCsvButton data={data} />
+      </div>
     </div>
   );
 };

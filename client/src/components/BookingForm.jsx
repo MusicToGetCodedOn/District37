@@ -115,7 +115,7 @@ const SlotButton = styled.button`
 
   &:hover {
     background-color: ${({ selected, theme }) =>
-    selected ? theme.primaryHover : theme.accenthover};
+    selected ? theme.hover : theme.accenthover};
   }
 
   &:focus {
@@ -139,6 +139,16 @@ const NavButtons = styled.div`
   display: flex;
   justify-content: space-between;
   margin-top: 1rem;
+`;
+
+const SummaryWrapper = styled.div`
+  background-color: ${({theme}) => theme.card};
+  padding: 1rem;
+  width: 40%;
+  justify-self: center;
+  border: 3px solid ${({theme}) => theme.border};
+  border-radius: 10px;
+  margin-bottom: 1rem;
 `;
 
 export default function BookingForm() {
@@ -510,6 +520,8 @@ export default function BookingForm() {
         <>
           <h3>Buchungsübersicht</h3>
 
+
+<SummaryWrapper>
           {/* Basisdaten der Buchung */}
           <p><strong>Name:</strong> {formData.customerName}</p>
           <p><strong>E-Mail:</strong> {formData.customerEmail}</p>
@@ -557,7 +569,7 @@ export default function BookingForm() {
               </p>
             </>
           )}
-
+</SummaryWrapper>
           
 
           {/* Navigation */}

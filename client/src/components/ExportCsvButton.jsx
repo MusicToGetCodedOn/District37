@@ -1,5 +1,19 @@
 import React from 'react';
 import Papa from 'papaparse';
+import styled from 'styled-components';
+
+const Button = styled.button`
+  background: ${({ theme }) => theme.primary};
+  color: ${({ theme }) => theme.text};
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  margin-bottom: 10rem;
+
+  &:hover {
+    background: ${({ theme }) => theme.hover};
+  }
+`;
 
 export default function ExportCsvButton({ data }) {
   const handleExport = () => {
@@ -25,8 +39,8 @@ export default function ExportCsvButton({ data }) {
   };
 
   return (
-    <button onClick={handleExport}>
+    <Button onClick={handleExport}>
       CSV herunterladen
-    </button>
+    </Button>
   );
 }

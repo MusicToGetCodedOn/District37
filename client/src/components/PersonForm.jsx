@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import { FaTrash } from 'react-icons/fa';
 
 const Wrapper = styled.div`
+  width: 60%;
+  justify-self: center; 
   margin-bottom: 1rem;
   padding: 1rem;
   border: 1px solid ${({ theme }) => theme.surface};
@@ -11,22 +13,56 @@ const Wrapper = styled.div`
   background-color: ${({ theme }) => theme.body};
 `;
 
+
 const Input = styled.input`
-  width: 100%;
-  padding: 0.6rem;
-  margin-bottom: 0.5rem;
+  width: 80%;
+  align-items: center;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  color: ${({ theme }) => theme.text};
+  background-color: ${({ theme }) => theme.card};
+  opacity: 0.8;
+  border: 2px solid ${({ theme }) => theme.border};
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 4px 4px ${({ theme }) => theme.primary}66;
+  }
 `;
 
 const Select = styled.select`
-  width: 100%;
-  padding: 0.6rem;
-  margin-bottom: 0.5rem;
+  width: 80%;
+  align-items: center;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  color: ${({ theme }) => theme.text};
+  background-color: ${({ theme }) => theme.card};
+  opacity: 0.8;
+  border: 2px solid ${({ theme }) => theme.border};
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 4px 4px ${({ theme }) => theme.primary}66;
+  }
 `;
 
 const Textarea = styled.textarea`
-  width: 100%;
-  padding: 0.6rem;
-  margin-bottom: 0.5rem;
+  width: 80%;
+  align-items: center;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  color: ${({ theme }) => theme.text};
+  background-color: ${({ theme }) => theme.card};
+  opacity: 0.8;
+  border: 2px solid ${({ theme }) => theme.border};
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 4px 4px ${({ theme }) => theme.primary}66;
+  }
 `;
 
 const RemoveButton = styled.button`
@@ -40,6 +76,23 @@ const RemoveButton = styled.button`
   align-items: center;
   gap: 0.4rem;
   font-size: 0.9rem;
+`;
+
+const Option = styled.option`
+  padding: 0.6rem 0.8rem;
+  color: ${({ theme }) => theme.text};
+  background-color: ${({ theme }) => theme.card};
+  border: none;
+  border-radius: 4px;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.primaryhover}22;
+  }
+
+  &:checked {
+    background-color: ${({ theme }) => theme.primary};
+    color: ${({ theme }) => theme.body};
+  }
 `;
 
 export default function PersonForm({ index, person, services, onUpdate, onRemove, canRemove }) {
@@ -58,11 +111,11 @@ export default function PersonForm({ index, person, services, onUpdate, onRemove
         onChange={(e) => onUpdate(index, 'serviceId', e.target.value)}
         required
       >
-        <option value="">Service wählen</option>
+        <Option value="">Service wählen</Option>
         {services.map(service => (
-          <option key={service._id} value={service._id}>
+          <Option key={service._id} value={service._id}>
             {service.name} – {service.price}€
-          </option>
+          </Option>
         ))}
       </Select>
       <Textarea

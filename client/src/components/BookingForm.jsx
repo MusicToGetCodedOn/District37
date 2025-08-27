@@ -67,12 +67,38 @@ const Day = styled.div`
   }
 `;
 
-const Input = styled.input`
-  width: 100%;
-  padding: 0.8rem;
+const InputWrapper = styled.div`
+ width: 60%;
+  justify-self: center; 
   margin-bottom: 1rem;
+  padding: 1rem;
+  border: 1px solid ${({ theme }) => theme.surface};
+  border-radius: 6px;
+  background-color: ${({ theme }) => theme.body};
+  padding-top: 2rem;
 `;
 
+const Input = styled.input`
+  width: 50%;
+  align-items: center;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  color: ${({ theme }) => theme.text};
+  background-color: ${({ theme }) => theme.card};
+  opacity: 0.8;
+  border: 2px solid ${({ theme }) => theme.border};
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 4px 4px ${({ theme }) => theme.primary}66;
+  }
+`;
+const Form = styled.form`
+  display: block;
+  gap: 1rem;
+  justify-content: center;
+`;
 
 const Button = styled.button`
   padding: 0.6rem 1.2rem;
@@ -394,21 +420,25 @@ export default function BookingForm() {
 
       {/* Schritt 2: Details eingeben */}
       {step === 2 && (
-        <form onSubmit={handleSubmit}>
-          <Input
-            type="text"
-            placeholder="Dein Name"
-            value={formData.customerName}
-            onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
-            required
-          />
-          <Input
+        <Form onSubmit={handleSubmit}>
+          <InputWrapper>
+          
+            <Input
+              type="text"
+              placeholder="Dein Name"
+              value={formData.customerName}
+              onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
+              required
+            />
+          
+            <Input
             type="email"
             placeholder="E-Mail-Adresse"
             value={formData.customerEmail}
             onChange={(e) => setFormData({ ...formData, customerEmail: e.target.value })}
             required
           />
+          </InputWrapper>
 
           <Switch
             checked={formData.isGroup}
@@ -456,7 +486,7 @@ export default function BookingForm() {
             <Button type="button" onClick={() => setStep(1)}><FaArrowLeft /> Zurück</Button>
             <Button type="button" onClick={() => setStep(3)} disabled={false}>Weiter <FaArrowRight /></Button>
           </div>
-        </form>
+        </Form>
       )}
 
       {/* Schritt 3: Zeit auswählen */}
